@@ -1,2 +1,2 @@
-# guicobol
-a gui framework for gnucobol 
+# GuiCOBOL
+a gui framework for gnucobol that uses agar gui tool kit 
