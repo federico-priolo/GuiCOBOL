@@ -1,0 +1,1520 @@
+*
+** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files
+*
+
+*
+* usage:   INVOKE SUPER "addform" RETURNING object
+*
+
+#addform max=5
+
+            move "addform"             to agar-function
+            call agar-cobol
+
+            if agar-main = NULL  move agar-object to agar-main end-if
+            move  agar-object          to
+                                       $PARAM(5)
+            $DOT
+
+
+*
+* usage:   INVOKE object "addscrollview" RETURNING object
+*
+
+#addscrollview max=5
+
+          move 
+            $PARAM(2)                  
+               to agar-object
+
+            move "addscrollview"       to agar-function
+            call agar-cobol  
+
+            move agar-widget           to
+                        $PARAM(5)
+                                         
+
+            $DOT
+
+
+
+*
+* usage:   INVOKE widget  "addpane" using "vertic"  RETURNING side1 side2
+*                                         "horiz"
+
+#addpane max=8
+
+          move 
+            $PARAM(2)                  
+               to agar-object
+           move 
+            $PARAM(5)                  
+               to agar-text
+
+            move "addpane"             to agar-function
+
+            call agar-cobol
+
+            move agar-pane-one           to
+                                          $PARAM(7)                  
+            move agar-pane-two           to
+                                          $PARAM(8)                  
+    
+
+            $DOT
+
+*
+* usage:   INVOKE object "refresh"
+*
+
+
+#refresh  max=3
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+            move "refresh"             to agar-function
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   INVOKE object "disable"
+*
+
+
+#disable   max=3
+
+
+             call static "AG_WidgetDisable"
+                using by value 
+                 $PARAM(2)
+             end-call
+
+            $DOT
+
+*
+* usage:   INVOKE object "disable"
+*
+
+
+#enable    max=3
+
+           
+             call static "AG_WidgetEnable"
+                using by value 
+                 $PARAM(2)
+             end-call
+             
+            $DOT
+
+
+*
+* usage:   INVOKE object "show"
+*
+
+
+#show max=3
+
+            move
+                 $PARAM(2)
+                                       to agar-widget
+            move "set-visible"         to agar-function
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   INVOKE object "hide"
+*
+
+#hide  max=3
+
+            move
+                 $PARAM(2)
+                                       to agar-widget
+            move "set-invisible"       to agar-function
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   INVOKE object "expand"
+*
+
+#expand  max=3
+
+            call static "ag_expand"
+                using by value
+                 $PARAM(2)
+                 returning omitted
+            end-call
+
+            $DOT
+
+
+*
+* usage:   INVOKE object "expandwidth"
+*
+
+#expandwidth  max=3
+
+            call static "AG_ExpandHoriz"
+                using by value
+                 $PARAM(2)
+                 returning omitted
+            end-call
+
+            $DOT
+
+#expandheight  max=3
+
+           call static "AG_ExpandVertic"
+                using by value
+                 $PARAM(2)
+                 returning omitted
+            end-call
+
+            $DOT
+
+
+
+#showform max=3
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+            move "showform"            to agar-function
+            call agar-cobol
+
+
+            $DOT
+
+*
+* usage:   INVOKE object "run"
+*
+
+
+#run    max=3
+
+            call "AG_EventLoop" returning  agar-eventManager
+
+            $DOT
+
+
+*
+* usage:   INVOKE object "addHoriz"
+*
+
+
+#addhoriz    max=3
+
+           call static "AG_SeparatorNewHoriz"
+                using by value
+                 $PARAM(2)
+                     returning omitted
+           end-call
+           $DOT
+*
+* usage:   INVOKE object "addvertic"
+*
+
+
+#addvertic   max=3
+
+             call static "AG_SeparatorNewVert"
+                using by value
+                 $PARAM(2)
+                     returning omitted
+             end-call
+           
+            $DOT
+
+
+#addspaceshoriz    max=3
+
+            
+           call static "AG_SpacerNewHoriz"
+                using by value 
+                  $PARAM(2)
+                    
+            end-call
+            
+            $DOT
+
+
+*
+* usage:   INVOKE object "addspacesvertic"
+*
+
+
+#addspacesvertic   max=3
+
+
+            
+           call static "AG_SpacerNewVert"
+                using by value 
+                  $PARAM(2)
+                    
+            end-call
+            
+            $DOT
+
+
+*
+* usage:   INVOKE object "gotfocus"
+*
+
+
+#gotfocus   max=3
+
+            call static "AG_WidgetFocus" using
+               by value
+                agar-widget
+                $PARAM(2)
+            end-call   
+            $DOT
+
+*
+*
+* usage:   INVOKE object "closeform" using procedure
+*
+
+#closed   min=5 max=5
+
+      *
+      **  link the event to the required procedure
+      *
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+
+            set agar-callback          to entry
+                                          $PARAM(5)
+
+            move
+                 $PARAM(5)
+                                       TO agar-procedure
+            move "window-detached" & X"00"   to agar-event
+            move "setevent"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+
+
+*
+* usage:   INVOKE object "addevent" using event procedure
+*
+
+#addevent   min=6 max=6
+
+*
+**  link the event to the required procedure
+*
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+
+            set agar-callback          to entry
+                                          $PARAM(6)
+
+            move
+                 $PARAM(6)
+                                       TO agar-procedure
+
+            move
+                 $PARAM(5)
+                                       TO agar-event
+            move "addevent"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   INVOKE SUPER  "stoprun"
+*
+#stoprun    min=3 max=3
+
+        
+            call "AG_Terminate" using by value 0
+                returning omitted end-call
+
+            $DOT
+
+
+
+#close      min=3 max=3
+
+          
+            call "AG_QuitGUI" using by value 0 
+               returning omitted end-call
+
+            $DOT
+
+
+*
+* usage:   move "tittle" to "caption"  of object 
+*
+#set-caption
+
+            move "set-caption"         to agar-function
+
+            $STATEMENT
+                                       to agar-text
+
+            move
+                 $PARAM(6)
+                                       TO agar-object
+           
+            call agar-cobol
+
+            $DOT
+
+
+
+*
+* usage:   move "xxxx"  to "render"  of object 
+*
+#set-render
+
+            move "set-render"         to agar-function
+
+            $STATEMENT
+                                       to agar-text
+
+            move
+                 $PARAM(6)
+                                       TO agar-widget
+            call agar-cobol
+
+            $DOT
+
+
+*
+* usage:   move "courier"  to "font"  of widget  (inline)
+*
+#set-font
+
+             call static "AG_SetStyle" using
+               by value  
+                 $PARAM(6)
+                  by content "font-family"
+                   by content 
+                     $PARAM(2)
+                   end-call
+
+           $DOT
+
+*
+* usage:   move "100%"  to "fontsize"  of widget 
+*
+#set-fontsize
+
+           call static "AG_SetStyle" using
+               by value 
+               $PARAM(6)
+                  by content "font-size"
+                  by content
+                  $PARAM(2)
+            end-call       
+           
+
+            $DOT
+
+
+*
+* usage:   MOVE "caption" of SELF TO VARIABLE
+*                                        6       7
+#get-caption
+
+            move 
+               $PARAM(4)
+                                       to agar-widget
+            move "get-caption"         to agar-function
+
+            call agar-cobol
+
+            move  agar-value           to
+                                       $PARAM(6)
+                                       $PARAM(7)
+
+            $DOT
+
+*
+* usage:   INVOKE parent "addbox" RETURNING object
+*
+
+#addbox  max=5
+
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+
+            move "addbox"            to agar-function
+            call agar-cobol
+
+            move                       agar-widget to
+                                       $PARAM(5)
+                                                 
+            $DOT
+
+
+
+*
+* usage:   INVOKE parent "addframe" RETURNING object
+*
+
+#addframe  max=5
+
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+
+            move "addframe"            to agar-function
+            call agar-cobol
+
+            move                       agar-widget to
+                                       $PARAM(5)
+                                                 
+            $DOT
+
+*
+* usage:   move  "class"  of object to agar-class
+*
+#get-class
+
+            move 
+                                       $PARAM(4)
+                                       to agar-object
+
+            move "get-class"           to agar-function
+
+            call agar-cobol
+
+            move                       agar-class to
+                                       $PARAM(6)
+   
+            $DOT
+
+*
+* usage:   move  "parent"  of object to agar-parent
+*
+#get-parent min=6 max=6
+
+                call STATIC "ag_object_parent"
+                  using by value 
+                    $PARAM(4)
+                     returning 
+                       $PARAM(6)
+                end-call
+
+            $DOT
+*
+* usage:   move  "name"  of object to agar-text
+*
+#get-name
+            move
+                                       $PARAM(4)
+                                       to agar-object
+
+            move "get-name"            to agar-function
+
+            call agar-cobol
+
+            move                       agar-text to
+                                       $PARAM(6)
+   
+            $DOT
+
+*
+* usage:   move  "object" of nome to agar-object
+*
+#get-object
+                       
+               call static "AG_ObjectFind" 
+                using by reference 
+                $PARAM(4)
+                  returning 
+                   $PARAM(6)
+               end-call
+
+            $DOT
+
+*
+* usage:   move "this is  the name" to  "name"  of object
+*
+#set-name
+            move
+                                       $PARAM(6)
+                                       to agar-object
+
+            move                       
+                                       $PARAM(2)
+                                       to agar-text 
+   
+            move "set-name"            to agar-function
+
+            call agar-cobol
+
+   
+            $DOT
+
+
+*
+* usage:   move  "valore"  to  "text"  of text
+*
+#set-text
+            move
+                                       $PARAM(6)
+                                       to agar-widget
+
+            move                       
+                                       $PARAM(2)
+                                       to agar-text 
+            move "set-text"            to agar-function
+
+            call agar-cobol
+ 
+            $DOT
+ 
+
+*
+*  invoke widget "addproperty" using "nome" valore returning agar-object.
+*
+#addproperty min=8 max=8
+            move
+                                       $PARAM(2)
+                                       to agar-widget
+            move                       
+                                       $PARAM(5)
+                                       to agar-text 
+            move                       
+                                       $PARAM(6)
+                                       to agar-value
+            move "addproperty"         to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+*
+*  invoke widget "addprogress"  returning agar-object.
+*
+#addprogress min=5 max=5
+
+            move
+                                       $PARAM(2)
+                                       to agar-object
+            move "addprogress"         to agar-function
+
+            call agar-cobol
+
+            move agar-widget
+                    to
+                                       $PARAM(5)
+
+            $DOT
+ 
+*
+*  invoke widget "addslider"  returning agar-object. (horizzontal)
+*
+#addslider min=5 max=5
+            
+            move
+                                       $PARAM(2)
+                                       to agar-object
+            move "addslider"           to agar-function
+
+            call agar-cobol
+
+            move agar-widget
+                    to
+                                       $PARAM(5)
+
+            $DOT
+ 
+*
+*  invoke widget "addslider"  returning agar-object. (vertical)
+*
+#addsliderv min=5 max=5
+
+            move
+                                       $PARAM(2)
+                                       to agar-object
+            move "addsliderv"           to agar-function
+
+            call agar-cobol
+
+            move agar-widget
+                    to
+                                       $PARAM(5)
+
+            $DOT
+ 
+
+*
+*  invoke widget "addscroll"  returning agar-object. (horizzontal)
+*
+#addscroll min=5 max=5
+            
+            move
+                                       $PARAM(2)
+                                       to agar-object
+            move "addscroll"           to agar-function
+
+            call agar-cobol
+
+            move agar-widget
+                    to
+                                       $PARAM(5)
+
+            $DOT
+ 
+
+*
+*  invoke widget "addscrollv"  returning agar-object. (horizzontal)
+*
+#addscrollv min=5 max=5
+            
+            move
+                                       $PARAM(2)
+                                       to agar-object
+            move "addscrollv"          to agar-function
+
+            call agar-cobol
+
+            move agar-widget
+                    to
+                                       $PARAM(5)
+
+            $DOT
+ 
+
+
+
+*
+* usage: invoke widget "getproperty" using "nome" returning valore
+*
+#getproperty min=7 max=7
+
+
+            move
+                                       $PARAM(2)
+                                       to agar-widget
+            move                       
+                                       $PARAM(5)
+                                       to agar-text 
+            move "get-property"        to agar-function
+
+            call agar-cobol
+
+            move  agar-value           to 
+                                       $PARAM(7)
+                
+            $DOT
+
+
+*
+* usage:   move  "text"  of object to agar-text
+*
+#get-text
+            move
+                                       $PARAM(4)
+                                       to agar-widget
+
+            move "get-text"            to agar-function
+
+            call agar-cobol
+
+            move                       agar-text to
+                                       $PARAM(6)
+   
+            $DOT
+
+*
+* move agar-true  to  "value" of check
+*
+#set-value 
+
+            move
+                                       $PARAM(6)
+                                       to agar-object
+
+            move "set-value"           to agar-function
+
+            move
+                                       $PARAM(2)
+                                       to agar-int
+
+            call agar-cobol
+
+   
+            $DOT
+
+ 
+
+*
+* more "value" of check to value
+*
+#get-value 
+
+            move
+                                       $PARAM(4)
+                                       to agar-object
+
+            move "get-value"            to agar-function
+
+            call agar-cobol
+
+            move                       agar-int to
+                                       $PARAM(6)
+   
+            $DOT
+
+*
+
+*
+* more "min" of widget  to value
+*
+#get-min
+
+            move
+                                       $PARAM(4)
+                                       to agar-object
+
+            move "get-min"            to agar-function
+
+            call agar-cobol
+
+            move                       agar-int to
+                                       $PARAM(6)
+   
+            $DOT
+
+
+*
+* more "max" of widget  to value
+*
+#get-max
+
+            move
+                                       $PARAM(4)
+                                       to agar-object
+
+            move "get-max"            to agar-function
+
+            call agar-cobol
+
+            move                       agar-int to
+                                       $PARAM(6)
+   
+            $DOT
+
+
+
+#if-get-is-widget
+
+            move "is-widget"           to  agar-function
+
+            call agar-cobol
+
+
+            if   agar-boolean
+
+
+*
+* usage:   INVOKE parent "addlabel" using "testo" RETURNING object
+*
+
+#addlabel max=7
+
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addlabel"           to agar-function
+            call agar-cobol
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+            $DOT
+
+*
+* usage:   INVOKE parent "addtext" using "testo" RETURNING object
+*
+
+#addtext max=7
+
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addtext"           to agar-function
+            call agar-cobol
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+            $DOT
+
+*
+* usage:   INVOKE parent "addnumeric" using "testo" RETURNING object
+*
+
+#addnumeric max=7
+
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addnumeric"          to agar-function
+            call agar-cobol
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+            $DOT
+
+*
+* usage:   INVOKE object "addcombo" using "testo" RETURNING object
+*
+
+#addcombo  max=7
+         
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addcombo"            to agar-function
+            call agar-cobol
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+            $DOT
+
+*
+* usage:   INVOKE  widget  "move" using  100 200
+*
+
+
+#move   min=6 max=6
+
+            move                        
+                                       $PARAM(2)
+                                       to agar-widget
+            move "move"                to agar-function
+
+            move                        
+                                       $PARAM(5)
+                                       to agar-x
+            move                        
+                                       $PARAM(6)
+                                       to agar-y
+
+            call agar-cobol
+                                                 
+            $DOT
+*
+* usage:   INVOKE widget  "size" using 100 200
+*
+
+#size       min=6 max=6
+
+            move                        
+                                       $PARAM(2)
+                                       to agar-widget
+            move "size"                to agar-function
+
+            move                        
+                                       $PARAM(5)
+                                       to agar-width
+            move                        
+                                       $PARAM(6)
+                                       to agar-height
+
+            call agar-cobol
+
+            $DOT
+*
+* usage:   move  agar-true   to  "visible"  of object
+*usage:    move  agar-false  to  "visible"  of object
+*
+
+#set-visible
+
+            move
+                                       $PARAM(6)
+                                       to agar-widget
+
+            move                       
+                                       $PARAM(2)
+                                       to agar-boolean
+                               
+            if agar-boolean = agar-true 
+            move "set-visible"         to agar-function 
+            else
+            move "set-invisible"       to agar-function 
+            end-if
+            
+            call agar-cobol
+
+            $DOT
+
+
+*
+* usage:   INVOKE parent "addbutton" using "testo" RETURNING object
+*
+
+#addbutton max=7
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addbutton"           to agar-function
+            
+            call agar-cobol
+
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+                                       
+                                                 
+            $DOT
+
+*
+* usage:   INVOKE parent "addbuttonto" using "testo" "procedure" RETURNING object
+*
+#addbuttonto max=8
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addbuttonto"         to agar-function
+
+            set agar-callback          to entry
+                                       $PARAM(6)
+            move
+                 $PARAM(6)
+                                       TO agar-procedure
+            call agar-cobol
+
+            move                       agar-widget to
+                                       $PARAM(8)
+            $DOT
+
+*
+* usage:   INVOKE parent "addcheck" using "testo" RETURNING object
+*
+
+#addcheck max=7
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addcheck"           to agar-function
+            
+            call agar-cobol
+
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+            $DOT
+
+*
+* usage:   INVOKE parent "addcheckto" using "testo" "procedure" RETURNING object
+*
+#addcheckto max=8
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            
+            move "addcheckto"         to agar-function
+
+            set agar-callback          to entry
+                                       $PARAM(6)
+            move
+                 $PARAM(6)
+                                       TO agar-procedure
+            call agar-cobol
+
+            move                       agar-widget to
+                                       $PARAM(8)
+            $DOT
+
+*
+* usage:   INVOKE parent "addradio"  RETURNING object
+*
+
+#addradio max=5
+      
+            
+            call static "AG_RadioNew" using by value
+                                       $PARAM(2)
+            by value 0
+             by value null
+            returning 
+                                       $PARAM(5)
+            $DOT
+
+*
+* usage:   INVOKE parent "addradio" using "procedura"  RETURNING object
+*
+
+#addradioto max=7
+            call static "AG_RadioNew" using by value
+                                       $PARAM(2)
+            by value 0
+             by value null
+            returning 
+                                       $PARAM(7)
+            set agar-callback          to entry
+                                          $PARAM(5)
+            move 
+                 $PARAM(7)
+                                       to agar-object
+            move
+                 $PARAM(5)
+                                       TO agar-procedure
+            move "radio-changed" & X"00"   to agar-event
+            move "setevent"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+
+
+
+*
+* usage:   INVOKE widget "additem" using agar-text
+*
+#additem max=5
+
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            move 
+                                       $PARAM(2)
+                                       to agar-widget
+
+            move "additem"             to agar-function
+          
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   INVOKE parent "addfixed"  RETURNING object
+*
+#addfixed max=5
+
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+                          
+            move "addfixed"           to agar-function
+            
+            call agar-cobol
+
+            move                       agar-widget to
+                                       $PARAM(5)
+                                                 
+            $DOT
+
+*
+*  move "red" to "textcolor" of widget
+*
+#set-textcolor
+
+          
+           call static "AG_SetStyle" using
+               by value 
+                         $PARAM(6)
+                  by content "text-color"
+                  by content 
+                         $COLOR(2)
+           end-call
+           $DOT
+          
+
+*
+*  move "red" to "textcolor" of widget
+*
+#set-bordercolor
+
+             call static "AG_SetStyle" using
+               by value 
+                         $PARAM(6)
+                  by content "border-color"
+                  by content 
+                         $COLOR(2)
+           end-call
+ 
+          $DOT
+
+*
+*  move "red" to "color" of widget
+*
+#set-color
+
+          
+           call static "AG_SetStyle" using
+               by value 
+                         $PARAM(6)
+                  by content "color"
+                  by content 
+                         $COLOR(2)
+           end-call
+      *
+      * this note will be added to the gui source
+      * 
+
+
+           $DOT
+
+*
+*  move 10  to "maxitem" of widget
+*
+#set-maxitem
+
+           call static "AG_ComboSizeHint"
+            using by value
+              $PARAM(6)
+               by content "xxxxxxxxxx"
+                 by value 
+                 $PARAM(2)
+            end-call
+            
+           $DOT
+
+
+
+*
+*  move "italic" to "fontstyle" of widget
+*
+#set-fontstyle
+
+            move
+                 $PARAM(2)
+                                       to agar-text
+            move
+                 $PARAM(6)
+                                       to agar-widget
+
+            move "set-fontstyle"       to agar-function
+            call agar-cobol
+
+            $DOT
+
+             
+*
+*  move "bold" to "fontweight" of widget  (INLINE CODE)
+*
+#set-fontweight
+
+            move
+                 $PARAM(2)
+                                       to agar-text
+
+            evaluate function upper-case(agar-text)
+             WHEN "BOLD"
+             call static "AG_SetStyle" using
+               by value  
+                 $PARAM(6)
+                  by content "font-weight"
+                   by content "bold"
+                   end-call
+
+             WHEN "NORMAL"
+             call static "AG_SetStyle" using
+               by value  
+                 $PARAM(6)
+                  by content "font-weight"
+                   by content "normal"
+                   end-call
+             WHEN "NORMAL"
+             call static "AG_SetStyle" using
+               by value  
+                 $PARAM(6)
+                  by content "font-weight"
+                   by content "normal"
+                   end-call
+
+             WHEN other
+             call static "AG_SetStyle" using
+               by value  
+                 $PARAM(6)
+                  by content "font-weight"
+                   by content "!parent"
+                   end-call
+             END-evaluate
+
+            $DOT
+
+*
+*  move agar-true  to "isnumeric" of widget
+*
+#set-isnumeric
+
+               CALL  STATIC  "AG_TextboxSetIntOnly" 
+                using by value
+                 $PARAM(6)
+                    by value
+                     $PARAM(2)
+                       agar-int
+                       returning  omitted
+                end-call
+
+            $DOT
+
+            
+*  move agar-true  to "isdecimal" of widget
+*
+#set-isdecimal
+
+               CALL  STATIC  "AG_TextboxSetFltOnly" 
+                using by value
+                 $PARAM(6)
+                    by value
+                     $PARAM(2)
+                       agar-int
+                       returning  omitted
+                end-call
+
+            $DOT
+
+*
+*  move agar-true  to "homogenous" of widget
+*
+#set-homogenous
+
+               CALL  STATIC  "AG_BoxSetHomogenous" 
+                using by value
+                 $PARAM(6)
+                    by value
+                     $PARAM(2)
+                end-call
+
+            $DOT
+
+*
+* usage:   move  100 to "value"  of object to agar-class
+*
+#set-value
+
+            move 
+                                       $PARAM(6)
+                                       to agar-object
+
+            move 
+                                       $PARAM(2)
+                                       to agar-int
+
+            move "set-value"           to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move  100 to "min"  of object 
+*
+#set-min
+                   
+            call static "AG_BindInt" using
+               by value 
+                 $PARAM(6)
+                  by reference z"min"
+                   by reference
+                     $PARAM(2)
+            end-call     
+            $DOT
+
+*
+* usage:   move  100 to "max"  of object 
+*
+
+#set-max
+                   
+            call static "AG_BindInt" using
+               by value 
+                 $PARAM(6)
+                  by reference z"max"
+                   by reference
+                     $PARAM(2)
+            end-call     
+            $DOT
+
+*
+* usage:   move  100 to "min"  of object 
+*
+#set-mindecimal
+                   
+            call static "AG_BindFloat" using
+               by value 
+                 $PARAM(6)
+                  by reference z"min"
+                   by reference
+                     $PARAM(2)
+            end-call     
+            $DOT
+
+*
+* usage:   move  100 to "maxdecimal"  of object 
+*
+
+#set-maxdecimal
+                   
+            call static "AG_BindFloat" using
+               by value 
+                 $PARAM(6)
+                  by reference z"max"
+                   by reference
+                     $PARAM(2)
+            end-call     
+            $DOT
+
+
+#set-numeric
+                   
+            call static "AG_BindInt" using
+               by value 
+                 $PARAM(6)
+                  by reference z"value"
+                   by reference
+                     $PARAM(2)
+            end-call     
+            $DOT
+
+#set-decimal
+                   
+            call static "AG_BindFloat" using
+               by value 
+                 $PARAM(6)
+                  by reference z"value"
+                   by reference
+                     $PARAM(2)
+            end-call     
+            $DOT
+
+#set-increment
+                   
+            call static "AG_SetInt" using
+               by value 
+                 $PARAM(6)
+                  by reference z"inc"
+                   by reference
+                                 $PARAM(2)
+            end-call     
+            $DOT
+
+
+#set-incrementdecimal
+                   
+            call static "AG_SetFloat" using
+               by value 
+                 $PARAM(6)
+                  by reference z"inc"
+                   by reference
+                                 $PARAM(2)
+            end-call     
+            $DOT
+
+*
+
+*
+* usage:   move  100 to "size"  of object  use for slider !!!! 
+*
+#set-size
+
+            move 
+                                       $PARAM(6)
+                                       to agar-object
+
+            move 
+                                       $PARAM(2)
+                                       to agar-width
+
+            move "set-size"           to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move  "ciao" to "error" of self
+*
+#set-error
+
+                                      
+            move 
+                                       $PARAM(2)
+                                       to agar-text
+
+            move "set-error"           to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move  "ciao" to "warning" of self
+*
+#set-warning
+
+                                      
+            move 
+                                       $PARAM(2)
+                                       to agar-text
+
+            move "set-warning"          to agar-function
+
+            call agar-cobol
+
+            $DOT
+*
+* usage:   move  "ciao" to "warning" of self
+*
+#set-info
+                             
+            move 
+                                       $PARAM(2)
+                                       to agar-text
+
+            move "set-info"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+
+
+#END GUICOBOL.INF FILE
+ 
