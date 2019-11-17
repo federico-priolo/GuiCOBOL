@@ -1401,7 +1401,6 @@
             end-call     
             $DOT
 
-
 #set-numeric
                    
             call static "AG_BindInt" using
@@ -1514,7 +1513,25 @@
 
             $DOT
 
+*
+* usage:   move  "focused" of self to widget
+*
 
+
+#get-focused
+
+            move 
+               $PARAM(4)
+                                       to agar-object
+            move "get-focused"         to agar-function
+
+            call agar-cobol
+
+            move  agar-widget          to
+                                       $PARAM(6)
+
+            $DOT
+ 
 
 #END GUICOBOL.INF FILE
  
