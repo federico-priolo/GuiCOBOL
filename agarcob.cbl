@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.9  17th november 2019
       *
       * Copyright (C) 2019 Federico Priolo TP ONE SRL
       *
@@ -491,6 +491,7 @@
                
             when "set-name"     perform set-name    thru ex-set-name
             when "get-name"     perform get-name    thru ex-get-name
+            when "get-focused"  perform get-focused thru ex-get-focused
 
 
             when "addproperty"  perform addproperty 
@@ -558,7 +559,14 @@
        ex-addform.
             exit.
 
-       
+       get-focused.
+           
+                call "AG_WidgetFindFocused"
+                  using by value agar-object  returning agar-widget.
+           
+       ex-get-focused.
+            exit.
+            
        set-visible.
 
              perform get-class thru ex-get-class.
