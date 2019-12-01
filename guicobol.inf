@@ -1536,7 +1536,7 @@
 
 *
 * usage:   mov position to "position" of window
-
+*
             move 
                $PARAM(2)
                                        to agar-text
@@ -1545,6 +1545,34 @@
                                        to agar-object
             move "set-position"        to agar-function
             call agar-cobol
+            $DOT
+
+*
+* usage:   invoke super "zoomin"
+*
+
+#zoomin    max=3
+
+             call static "AG_ZoomIn"
+              returning omitted
+             end-call
+
+            $DOT
+
+#zoomout    max=3
+
+             call static "AG_ZoomOut"
+              returning omitted
+             end-call
+
+            $DOT
+
+#zoomreset    max=3
+
+             call static "AG_ZoomReset"
+              returning omitted
+             end-call
+
             $DOT
 
 
