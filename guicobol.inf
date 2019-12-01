@@ -1575,6 +1575,28 @@
 
             $DOT
 
+#maximize    max=3
+
+             call static "AG_WindowMaximize"
+              using by value
+                $PARAM(2)
+              returning omitted
+             end-call
+
+            $DOT
+
+
+#minimize    max=3
+
+             call static "AG_WindowMinimize"
+              using by value
+                $PARAM(2)
+              returning omitted
+             end-call
+
+            $DOT
+
+
 
 #END GUICOBOL.INF FILE
  
