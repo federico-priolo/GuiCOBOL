@@ -49,6 +49,14 @@
           05 combo-wprelist            usage binary-long.
           05 combo-hprelist            usage binary-long.
 
+
+
+        01 window-instance based.
+         04 filler                     pic x(640).
+         04 resto-win.
+          05 win-flags                 usage binary-long sync.
+          
+
        01 object-flags.
           05 AG-OBJECT-FLOATING-VARS   usage binary-long value h'00001'.
           05 AG-OBJECT-NON-PERSISTENT  usage binary-long value h'00002'.
@@ -70,6 +78,7 @@
       *>  05 AG-OBJECT-DUPED-FLAGS     usage binary-long value h'G_OBJ'.
 
        01 window-positions.
+          05 AG-WINDOW-NONE            usage binary-long value 0.
           05 AG-WINDOW-UPPER-LEFT      usage binary-long value 1.
           05 AG-WINDOW-UPPER-CENTER    usage binary-long value 2.
           05 AG-WINDOW-UPPER-RIGHT     usage binary-long value 3.
@@ -79,6 +88,7 @@
           05 AG-WINDOW-LOWER-LEFT      usage binary-long value 7.
           05 AG-WINDOW-LOWER-CENTER    usage binary-long value 8.
           05 AG-WINDOW-LOWER-RIGHT     usage binary-long value 9.
+          05 AG-WINDOW-LAST            usage binary-long value 10.
 
        01 progress-flags.
          05 AG-PROGRESS-BAR-HFILL	   USAGE binary-long value "01".
@@ -438,7 +448,9 @@
             when "set-height"   perform set-height  thru ex-set-height
 
             when "set-value"    perform set-value   thru ex-set-value
-               
+            
+            when "set-position" perform set-position 
+                                                    thru ex-set-position
             
             when "set-visible"  perform set-visible thru ex-set-visible
             when "set-invisible"  
@@ -475,7 +487,7 @@
             when "move"         perform moveto      thru ex-moveto
             when "size"         perform sizeto      thru ex-sizeto
             when "set-size"     perform sizeto      thru ex-sizeto
-
+             
             when "setevent"     perform setevent    thru ex-setevent
             when "addevent"     perform addevent    thru ex-addevent
 
@@ -1210,6 +1222,46 @@
        
        ex-set-name.
             exit. 
+
+
+       set-position.
+
+           evaluate function upper-case(agar-text)
+              when  "NONE"            MOVE 0 TO agar-int
+              when  "TOPLEFT"         MOVE 1 TO agar-int
+              when  "TOPCENTER"       MOVE 2 TO agar-int
+              when  "MIDDLERIGHT"     MOVE 3 TO agar-int
+              when  "MIDDLELEFT"      MOVE 4 TO agar-int
+              when  "MIDDLECENTER"    MOVE 5 TO agar-int
+              when  "MIDDLERIGHT"     MOVE 6 TO agar-int
+              when  "BOTTONLEFT"      MOVE 7 TO agar-int
+              when  "BOTTONCENTER"    MOVE 8 TO agar-int
+              when  "BOTTONPRIGHT"    MOVE 9 TO agar-int
+              when  "LAST"            MOVE 10 TO agar-int
+                 
+           end-evaluate.
+
+             if agar-text(1:2) numeric
+                move zeros             to agar-binary
+                move agar-text(1:2)    to agar-binary(4:2)
+                   move agar-binary    to agar-int                               
+             else
+             if agar-text(1:1) numeric
+                move zeros             to agar-binary
+                move agar-text(1:1)    to agar-binary(5:1)
+                 move agar-binary    to agar-int.           
+                 
+                              
+                display "agar-int" agar-int
+            call static "AG_WindowSetPosition" using
+               by value agar-object
+                  by value agar-int 
+                   by value 1
+                     returning  omitted.
+       
+       ex-set-position.
+            exit. 
+
 
        get-name.
 
