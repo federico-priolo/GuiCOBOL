@@ -1531,7 +1531,22 @@
                                        $PARAM(6)
 
             $DOT
- 
+
+#set-position
+
+*
+* usage:   mov position to "position" of window
+
+            move 
+               $PARAM(2)
+                                       to agar-text
+            move 
+               $PARAM(6)
+                                       to agar-object
+            move "set-position"        to agar-function
+            call agar-cobol
+            $DOT
+
 
 #END GUICOBOL.INF FILE
  
