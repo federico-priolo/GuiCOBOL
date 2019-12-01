@@ -36,13 +36,13 @@
         01 agar-style         usage binary-long    external.
         
         01 agar-ind           usage signed-short   external.
-        01 agar-int           usage unsigned-short       external.
+        01 agar-int           usage unsigned-short external.
         01 agar-items         usage signed-short   external.
         01 agar-size          usage unsigned-short external.
         01 agar-boolean       usage signed-short external.
         01 agar-size-t        usage binary-c-long.  
         01 agar-class         pic x(32) external.
-          
+        01 agar-binary        pic 9(5).  
         01 agar-x             usage binary-long    external.
         01 agar-y             usage binary-long    external.
         01 agar-width         usage binary-long    external.
