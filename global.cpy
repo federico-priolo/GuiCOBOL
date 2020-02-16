@@ -54,7 +54,7 @@
         01 agar-blue          usage unsigned-short external.
         01 agar-callback  usage procedure-pointer external.
         01 agar-procedure     pic x(32)            external.
-		
+        01 agar-local-debug   pic x                external. 		
 		
         01 rc usage binary-long external.
 

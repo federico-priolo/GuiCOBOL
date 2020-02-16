@@ -1084,8 +1084,28 @@
             $DOT
 
 *
-* usage:   INVOKE parent "addradio" using "procedura"  RETURNING object
+* usage:   INVOKE parent "addradioto" using "procedura"  RETURNING object
 *
+
+* move "horizontal" to  "disposition" of radio
+* move "vertical" to  "disposition" of radio
+* move "h" to  "disposition" of radio
+* move "v" to  "disposition" of radio
+
+#set-disposition
+
+            move 
+               $PARAM(2)
+                                       to agar-text
+            move 
+               $PARAM(6)
+                                       to agar-object
+            move "set-disposition"     to agar-function
+            call agar-cobol
+            
+            $DOT
+
+ 
 
 #addradioto max=7
             call static "AG_RadioNew" using by value
@@ -1535,7 +1555,7 @@
 #set-position
 
 *
-* usage:   mov position to "position" of window
+* usage:   move position to "position" of window
 *
             move 
                $PARAM(2)
@@ -1596,6 +1616,19 @@
 
             $DOT
 
+*
+* usage:   invoke super "EnableDebug"
+*
+
+#EnableDebug    max=3
+            move "y" to agar-local-debug
+            $DOT
+*
+* usage:   invoke super "DisableDebug"
+*
+#DisableDebug    max=3
+            move "n" to agar-local-debug
+            $DOT
 
 
 #END GUICOBOL.INF FILE
