@@ -28,7 +28,7 @@
        data division.
 
        working-storage section.
-       01 ind                      usage binary-long unsigned.             
+       01 ind                      usage binary-long unsigned.
        01 pane-instance based.  
           05 filler                    pic x(640).
           05 pane-type                 usage binary-long sync.
@@ -432,6 +432,7 @@
               perform inizializza      thru ex-inizializza.
 
             if function lower-case(agar-debug) = "enable"
+			 or function lower-case(agar-local-debug) = "y"
              perform agar-do-debug      thru ex-agar-do-debug.
 
             evaluate function lower-case(agar-function)
@@ -451,6 +452,8 @@
             
             when "set-position" perform set-position 
                                                     thru ex-set-position
+            when "set-disposition" perform set-disposition
+                                                thru ex-set-disposition
             
             when "set-visible"  perform set-visible thru ex-set-visible
             when "set-invisible"  
@@ -522,7 +525,8 @@
                         upon syserr
             end-evaluate.
 
-            if agar-debug = "enable"
+            if function lower-case(agar-debug) = "enable"
+			  or function lower-case(agar-local-debug) = "y"
              perform agar-after-debug    thru ex-agar-after-debug.
 
             exit program.
@@ -972,7 +976,7 @@
               
                move pane-divs(1)               to agar-pane-one
                move pane-divs(2)               to agar-pane-two.
-               
+                
             
        ex-addpane.
             exit.
@@ -1177,7 +1181,7 @@
              by value 3
                returning omitted.
 
-           display "creo" agar-text.
+           
            
        ex-addcombo.
             exit.
@@ -1250,9 +1254,7 @@
                 move zeros             to agar-binary
                 move agar-text(1:1)    to agar-binary(5:1)
                  move agar-binary    to agar-int.           
-                 
-                              
-                display "agar-int" agar-int
+                
             call static "AG_WindowSetPosition" using
                by value agar-object
                   by value agar-int 
@@ -1260,6 +1262,24 @@
                      returning  omitted.
        
        ex-set-position.
+            exit. 
+
+
+
+       set-disposition.
+
+           evaluate function upper-case(agar-text) (1:1)
+              when  "V"            MOVE 0 TO agar-int
+              when  OTHER          MOVE 1 TO agar-int
+                 
+           end-evaluate.
+
+           call static "AG_RadioSetDisposition" using
+               by value agar-object
+                  by value agar-int 
+                    returning  omitted.
+       
+       ex-set-disposition.
             exit. 
 
 
@@ -1790,8 +1810,7 @@
 
        procedure division .
 
-               display "sono in DefaultDestroy".
- 
+
                call "AG_Terminate" using by value 0.
 
        exit program.
