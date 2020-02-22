@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.20  22th february  2020
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.21  22th february  2020
       *
       * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
@@ -418,25 +418,25 @@
         07 ind-gamma                   pic 99.
  
        77 local-buffer                 pic x(10) value space. 
-	   77 local-string                 pic x(100) based. 
+       77 local-string                 pic x(100) based. 
        77 local                        usage pointer.
-
             copy "global".
-
        procedure division.
 
             ACCEPT agar-debug from environment "GuiCOBOLdebug".
-
 
             if agar-started not = agar-true
              and agar-function not = "initialize"
 
               perform inizializza      thru ex-inizializza.
 
-            if function lower-case(agar-debug) = "enable"
-            or function lower-case(agar-local-debug) = "y"
-             perform agar-do-debug      thru ex-agar-do-debug.
+            if function lower-case(agar-local-debug) = "y"
+              perform agar-do-debug      thru ex-agar-do-debug.
 
+            if function lower-case(agar-debug) = "enable" 
+               perform agar-do-debug      thru ex-agar-do-debug.
+
+            
             evaluate function lower-case(agar-function)
 
             when "addform"      perform addform     thru ex-addform
@@ -529,8 +529,11 @@
             end-evaluate.
 
             if function lower-case(agar-debug) = "enable"
-			  or function lower-case(agar-local-debug) = "y"
              perform agar-after-debug    thru ex-agar-after-debug.
+
+            if function lower-case(agar-local-debug) = "y"
+             perform agar-after-debug    thru ex-agar-after-debug.
+
 
             exit program.
 
@@ -871,19 +874,13 @@
 
             PERFORM asciiZ thru ex-asciiz.
                  
-            call static "AG_LabelNew" using
-               by value agar-object
-                   by value 0 
-      *           AG-LABEL-EXPAND 
-      *           AG-LABEL-HFILL
-      *           AG-LABEL-EXPAND 
-      *           AG-LABEL-HFILL 
-      *           AG-LABEL-VFILL
-                  by content  agar-text 
+      *      call static "AG_LabelNew" using
+             call  "AG_LabelNew" using
+               by value agar-object 0
+                    by reference agar-text 
                      returning agar-widget.
-                
-             
-                  call static "AG_LabelSizeHint"
+               
+                   call static "AG_LabelSizeHint"
                    using by value agar-widget 
                     by reference agar-text.
                
