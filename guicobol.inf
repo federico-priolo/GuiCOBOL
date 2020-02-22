@@ -1178,7 +1178,7 @@
 #set-textcolor
 
           
-           call static "AG_SetStyle" using
+          call "AG_SetStyle" using
                by value 
                          $PARAM(6)
                   by content "text-color"
@@ -1186,14 +1186,29 @@
                          $COLOR(2)
            end-call
            $DOT
+
+*
+*  move "red" to "backcolor" of widget
+*
+#set-textcolor
+
           
+          call "AG_SetStyle" using
+               by value 
+                         $PARAM(6)
+                  by content "background-color"
+                  by content 
+                         $COLOR(2)
+           end-call
+           $DOT
+
 
 *
 *  move "red" to "textcolor" of widget
 *
 #set-bordercolor
 
-             call static "AG_SetStyle" using
+             call  "AG_SetStyle" using
                by value 
                          $PARAM(6)
                   by content "border-color"
@@ -1209,7 +1224,7 @@
 #set-color
 
           
-           call static "AG_SetStyle" using
+           call "AG_SetStyle" using
                by value 
                          $PARAM(6)
                   by content "color"
@@ -1219,7 +1234,6 @@
       *
       * this note will be added to the gui source
       * 
-
 
            $DOT
 
