@@ -4,7 +4,7 @@
       *
       * Gui builder for OPENCOBOL
       *
-      * pre-release agar     1 October   2019  0.1.2.22      
+      * pre-release agar    22 february  2020  0.1.2.23      
       * pre-release agar     1 August    2019  0.1.2.18      
       * FIRST                1 SEPTEMBER 2011  0.1.0
       *
@@ -704,8 +704,11 @@
                 EXIT.
 
         FAI-ENDMETHOD.
-        
-                    STRING "       end program " 
+      *
+      **** do not remove: leave this split into separate lines to allows the tp-cobol-debugger to run inside guicobol.cbl itself for testing...        
+      *
+                    STRING "       end"
+                         " program " 
                       FUNCTION TRIM(IDENTIFICATION-DIVISION)
                          "."
                          delimited by size into DATI-OUT
@@ -919,9 +922,9 @@
 
         LOGO.
                 DISPLAY
-                "GuiCobol builder for GNUCOBOL "
-                "Versione 0.1.2.18 Package 08-10-2019".
-                DISPLAY "CopyRight(C) 2011-2019 Federico Priolo "
+                "GuiCOBOL builder for GNUCOBOL "
+                "Versione 0.1.2.23 Package 22-02-2020".
+                DISPLAY "CopyRight(C) 2011-2020 Federico Priolo "
                 DISPLAY "                              ".
                 DISPLAY "federico.priolo@tp-one.it ".
                 DISPLAY "                              ".
@@ -1325,12 +1328,12 @@
                        STRING "'" VALUE-COLOR "'"
                         DELIMITED BY SIZE INTO REC-OUT(20:)
                      
-                        *> IF SW-SW-VERBOSE = "S"
-                *>         display "found " VALUE-COLOR " FOR "
-                *>        FUNCTION TRIM(COLOR-REQUIRED)
-                        *> end-if,                        
-                        
-                       GO TO END-CERCA-COLOR
+                   IF SW-VERBOSE = "S"
+                    display "found " VALUE-COLOR " FOR "
+                     FUNCTION TRIM(COLOR-REQUIRED)
+                    end-if                        
+                   
+                 GO TO END-CERCA-COLOR
                end-if               
                
                GO TO CICLO-CERCA-COLOR.
