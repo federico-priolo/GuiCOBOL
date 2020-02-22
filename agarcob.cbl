@@ -4,9 +4,9 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.9  17th november 2019
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.20  22th february  2020
       *
-      * Copyright (C) 2019 Federico Priolo TP ONE SRL
+      * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
       * This program is free software; you can redistribute it and/or modify
       * it under the terms of the GNU General Public License as published by
@@ -417,7 +417,9 @@
         07 ind-beta                    pic 99.
         07 ind-gamma                   pic 99.
  
-       77 local-buffer                 pic x(10) value space.
+       77 local-buffer                 pic x(10) value space. 
+	   77 local-string                 pic x(100) based. 
+       77 local                        usage pointer.
 
             copy "global".
 
@@ -432,7 +434,7 @@
               perform inizializza      thru ex-inizializza.
 
             if function lower-case(agar-debug) = "enable"
-			 or function lower-case(agar-local-debug) = "y"
+            or function lower-case(agar-local-debug) = "y"
              perform agar-do-debug      thru ex-agar-do-debug.
 
             evaluate function lower-case(agar-function)
@@ -486,6 +488,7 @@
             when "addnumeric"   perform addnumeric  thru ex-addnumeric
             when "addfixed"     perform addfixed    thru ex-addfixed
             when "addcombo"     perform addcombo    thru ex-addcombo
+            when "addradio"     perform addradio    thru ex-addradio
 
             when "move"         perform moveto      thru ex-moveto
             when "size"         perform sizeto      thru ex-sizeto
@@ -818,7 +821,7 @@
             
             move agar-text         to agar-value
         
-            call static "AG_SetString" using
+            call "AG_SetString" using
                by value agar-object
                   by reference z"caption"
                    by reference agar-value
@@ -1049,6 +1052,15 @@
        ex-addfixed.
             exit.
 
+       addradio.
+
+            call static "AG_RadioNew" using
+                by value agar-object
+                      returning agar-widget.
+                           
+       ex-addradio.
+            exit.
+
 
        addbutton.
 
@@ -1093,7 +1105,7 @@
 
                 when "radio" 
             
-               call static "AG_RadioAddItemS" using
+               call "AG_RadioAddItemS" using
                 by value agar-widget
                   by content  agar-text  
                      returning omitted
@@ -1550,7 +1562,7 @@
            
             evaluate function upper-case(agar-text) 
                when "BOLD"     move "bold"    to local-buffer
-               when "NORMAL"  move "normal"  to local-buffer
+               when "NORMAL"   move "normal"  to local-buffer
                when "!PARENT"  move "!parent" to local-buffer
                when OTHER      move "normal"  to local-buffer
             end-evaluate
@@ -1701,14 +1713,14 @@
  
        get-class.
                
-                call static "AG_ObjectGetClassName" 
+                call "AG_ObjectGetClassName" 
                      using by value agar-object 
                        by value 0
-                       returning agar-dummy
+                       returning local
                        
-                  set address of agar-string  TO agar-dummy.
+                  set address of local-string  TO local.
             
-                  Evaluate  function upper-case( agar-string(4:3))
+                  Evaluate  function upper-case( local-string(4:3))
                   
                    when "WIN"      MOVE "form"         to agar-class
                    when "BOX"      MOVE "box"          to agar-class

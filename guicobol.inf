@@ -1,5 +1,5 @@
 *
-** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files
+** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 22.02.2020
 *
 
 *
@@ -15,7 +15,6 @@
             move  agar-object          to
                                        $PARAM(5)
             $DOT
-
 
 *
 * usage:   INVOKE object "addscrollview" RETURNING object
@@ -1073,16 +1072,15 @@
 *
 
 #addradio max=5
-      
-            
-            call static "AG_RadioNew" using by value
+            move
                                        $PARAM(2)
-            by value 0
-             by value null
-            returning 
+                                       to agar-object
+            move "addradio"            to agar-function
+            call agar-cobol
+            move agar-widget           to
                                        $PARAM(5)
             $DOT
-
+ 
 *
 * usage:   INVOKE parent "addradioto" using "procedura"  RETURNING object
 *
@@ -1105,15 +1103,21 @@
             
             $DOT
 
+*
+* usage:   INVOKE parent "addradioto" using "ThisEventProcedure"  RETURNING object
+*
  
 
 #addradioto max=7
-            call static "AG_RadioNew" using by value
+
+            move
                                        $PARAM(2)
-            by value 0
-             by value null
-            returning 
+                                       to agar-object
+            move "addradio"            to agar-function
+            call agar-cobol
+            move agar-widget           to
                                        $PARAM(7)
+            
             set agar-callback          to entry
                                           $PARAM(5)
             move 
@@ -1621,12 +1625,15 @@
 *
 
 #EnableDebug    max=3
+
             move "y" to agar-local-debug
             $DOT
 *
 * usage:   invoke super "DisableDebug"
 *
+
 #DisableDebug    max=3
+
             move "n" to agar-local-debug
             $DOT
 
