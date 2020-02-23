@@ -1,0 +1,1 @@
+cc -o hello `agar-config --cflags` hello.c `agar-config --libs`
