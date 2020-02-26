@@ -22,7 +22,7 @@
 
 #addscrollview max=5
 
-          move 
+            move 
             $PARAM(2)                  
                to agar-object
 
@@ -1178,14 +1178,14 @@
 #set-textcolor
 
           
-          call "AG_SetStyle" using
+            call "AG_SetStyle" using
                by value 
                          $PARAM(6)
                   by content "text-color"
                   by content 
                          $COLOR(2)
-           end-call
-           $DOT
+            end-call
+            $DOT
 
 *
 *  move "red" to "backcolor" of widget
@@ -1193,14 +1193,14 @@
 #set-backcolor
 
           
-          call "AG_SetStyle" using
+            call "AG_SetStyle" using
                by value 
                          $PARAM(6)
                   by content "background-color"
                   by content 
                          $COLOR(2)
-           end-call
-           $DOT
+            end-call
+            $DOT
 
 
 *
