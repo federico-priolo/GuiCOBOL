@@ -1,5 +1,5 @@
 *
-** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 22.02.2020
+** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 26.02.2020
 *
 
 *
@@ -233,7 +233,7 @@
 #addspaceshoriz    max=3
 
             
-           call static "AG_SpacerNewHoriz"
+           call "AG_SpacerNewHoriz"
                 using by value 
                   $PARAM(2)
                     
@@ -1190,7 +1190,7 @@
 *
 *  move "red" to "backcolor" of widget
 *
-#set-textcolor
+#set-backcolor
 
           
           call "AG_SetStyle" using
