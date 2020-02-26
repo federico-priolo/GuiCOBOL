@@ -3,7 +3,7 @@
       *---------------------------------------------------------------------
       *
       * Gui builder for OPENCOBOL
-      *
+      * pre-release agar    26 february  2020  0.1.2.23  fixedcolor      *
       * pre-release agar    22 february  2020  0.1.2.23      
       * pre-release agar     1 August    2019  0.1.2.18      
       * FIRST                1 SEPTEMBER 2011  0.1.0
@@ -46,10 +46,7 @@
                  ORGANIZATION IS LINE SEQUENTIAL
                  FILE STATUS  IS STATUS-DO.
 
-                SELECT ARK-CO ASSIGN TO  FILE-COLOR
-                 ORGANIZATION IS LINE SEQUENTIAL
-                 FILE STATUS  IS STATUS-COLOR.
-
+                
                 SELECT ARK-OUT ASSIGN TO FILE-OUT
                  ORGANIZATION IS LINE SEQUENTIAL
                  FILE STATUS  IS STATUS-OUT.
@@ -76,12 +73,6 @@
            02 DATI-DO                 PIC X(500).
 
 
-        FD ARK-CO.
-        01 REC-CO.
-           02 NAME-COLOR               pic X(20).
-           02 FILLER1                  pic X.
-           02 VALUE-COLOR              pic X(7).
-           
         
 
         FD ARK-OUT.
@@ -1301,50 +1292,6 @@
         EX-CERCA-DO.
                EXIT.
          
-        CERCA-COLOR.
-        
-               ACCEPT FILE-COLOR FROM ENVIRONMENT "guicobol_color_inf"
-                END-ACCEPT.
-
-                IF FILE-COLOR = SPACES
-                MOVE "guicobol.col"    TO FILE-COLOR.
-
-               OPEN INPUT ARK-CO.
-
-               IF SW-VERBOSE = "S"
-                display "  Looking for color " 
-                   function trim(COLOR-REQUIRED) " into " FILE-COLOR.
-
-               MOVE "                    '#FFFFFF'"      TO REC-OUT.
-
-        CICLO-CERCA-COLOR.
-        
-               READ ARK-CO NEXT RECORD AT END GO TO END-CERCA-COLOR.
-                
-               IF FUNCTION UPPER-CASE(NAME-COLOR)
-                     = FUNCTION UPPER-CASE( COLOR-REQUIRED)
-
-                      MOVE SPACES          TO REC-OUT
-                       STRING "'" VALUE-COLOR "'"
-                        DELIMITED BY SIZE INTO REC-OUT(20:)
-                     
-                   IF SW-VERBOSE = "S"
-                    display "found " VALUE-COLOR " FOR "
-                     FUNCTION TRIM(COLOR-REQUIRED)
-                    end-if                        
-                   
-                 GO TO END-CERCA-COLOR
-               end-if               
-               
-               GO TO CICLO-CERCA-COLOR.
-               
-        END-CERCA-COLOR.
-               
-               CLOSE ARK-CO.
-               
-        EX-CERCA-COLOR.
-               EXIT.
-
         ADDED-LINES.
         
                  move rec-in           to REC-OUT.
@@ -1500,12 +1447,9 @@
                INSPECT DATI-DO TALLYING IND1 FOR ALL "$COLOR(2)".
 
                IF IND1 = 1
-                MOVE PARAMETRO(2)                TO COLOR-REQUIRED
-                INSPECT COLOR-REQUIRED REPLACING ALL '"' BY SPACES
-                MOVE FUNCTION TRIM(COLOR-REQUIRED) TO COLOR-REQUIRED
-                 PERFORM CERCA-COLOR             THRU EX-CERCA-COLOR
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
+                MOVE PARAMETRO(2)                TO REC-OUT(20:)
+                PERFORM SCRITTURA                THRU EX-SCRITTURA
+                GO TO EX-MANAGE-TEMPLATE.
 
 
       *
