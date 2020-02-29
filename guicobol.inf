@@ -399,11 +399,11 @@
 *
 #set-font
 
-             call static "AG_SetStyle" using
+             call "AG_SetStyle" using
                by value  
                  $PARAM(6)
-                  by content "font-family"
-                   by content 
+                  by reference  "font-family"
+                   by reference
                      $PARAM(2)
                    end-call
 
@@ -414,11 +414,11 @@
 *
 #set-fontsize
 
-           call static "AG_SetStyle" using
+           call  "AG_SetStyle" using
                by value 
                $PARAM(6)
-                  by content "font-size"
-                  by content
+                  by reference "font-size"
+                  by reference 
                   $PARAM(2)
             end-call       
            
