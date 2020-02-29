@@ -1,5 +1,5 @@
 *
-** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 26.02.2020
+** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 22.02.2020
 *
 
 *
@@ -22,7 +22,7 @@
 
 #addscrollview max=5
 
-            move 
+          move 
             $PARAM(2)                  
                to agar-object
 
@@ -233,7 +233,7 @@
 #addspaceshoriz    max=3
 
             
-           call "AG_SpacerNewHoriz"
+           call static "AG_SpacerNewHoriz"
                 using by value 
                   $PARAM(2)
                     
@@ -1178,14 +1178,14 @@
 #set-textcolor
 
           
-            call "AG_SetStyle" using
+          call "AG_SetStyle" using
                by value 
                          $PARAM(6)
-                  by content "text-color"
-                  by content 
+                  by reference "text-color"
+                  by reference 
                          $COLOR(2)
-            end-call
-            $DOT
+           end-call
+           $DOT
 
 *
 *  move "red" to "backcolor" of widget
@@ -1193,14 +1193,14 @@
 #set-backcolor
 
           
-            call "AG_SetStyle" using
+          call  "AG_SetStyle" using
                by value 
                          $PARAM(6)
-                  by content "background-color"
-                  by content 
+                  by reference "background-color"
+                  by reference 
                          $COLOR(2)
-            end-call
-            $DOT
+           end-call
+           $DOT
 
 
 *
@@ -1211,8 +1211,8 @@
              call  "AG_SetStyle" using
                by value 
                          $PARAM(6)
-                  by content "border-color"
-                  by content 
+                  by reference  "border-color"
+                  by reference 
                          $COLOR(2)
            end-call
  
@@ -1227,8 +1227,8 @@
            call "AG_SetStyle" using
                by value 
                          $PARAM(6)
-                  by content "color"
-                  by content 
+                  by reference  "color"
+                  by reference  
                          $COLOR(2)
            end-call
       *
