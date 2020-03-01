@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.21  22th february  2020
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.25  1th march  2020
       *
       * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
@@ -29,15 +29,19 @@
 
        working-storage section.
        01 ind                      usage binary-long unsigned.
+       
        01 pane-instance based.  
           05 filler                    pic x(640).
+          05 filler                    pic x(104).
+
           05 pane-type                 usage binary-long sync.
           05 pane-flags                usage binary-long unsigned.
           05 pane-divs             occurs 2 times usage pointer sync.
-          05 filler                    pic x(128).
+       
        
        01 combo-instance based.
-         04  filler                    pic x(640).
+         04 filler                    pic x(640).
+         04 filler                    pic x(104).
          04 resto-combo.
           05 combo-flags               usage binary-long sync.
           05 combo-tbox                usage pointer     sync.
@@ -431,7 +435,10 @@
               perform inizializza      thru ex-inizializza.
 
             if function lower-case(agar-local-debug) = "y"
-              perform agar-do-debug      thru ex-agar-do-debug.
+              move "enable"              to agar-debug.
+            if function lower-case(agar-local-debug) = "n"
+              move spaces              to agar-debug.
+
 
             if function lower-case(agar-debug) = "enable" 
                perform agar-do-debug      thru ex-agar-do-debug.
@@ -531,9 +538,7 @@
             if function lower-case(agar-debug) = "enable"
              perform agar-after-debug    thru ex-agar-after-debug.
 
-            if function lower-case(agar-local-debug) = "y"
-             perform agar-after-debug    thru ex-agar-after-debug.
-
+            
 
             exit program.
 
@@ -591,7 +596,20 @@
             
        set-visible.
 
+            if agar-widget = agar-form
+                call "AG_WindowShow"
+                using by value agar-widget returning omitted
+                 go to ex-set-visible.
+
+            if agar-debug = "enable"
+             move "internal get-class"   to agar-function
+              perform agar-do-debug      thru ex-agar-do-debug.
+
              perform get-class thru ex-get-class.
+
+            if agar-debug = "enable"
+             perform agar-after-debug    thru ex-agar-after-debug.
+
 
             evaluate agar-class
                when "form"
@@ -674,6 +692,10 @@
 
        refresh.
            
+            if agar-debug = "enable"
+             move "internal get-class"   to agar-function
+              perform agar-do-debug      thru ex-agar-do-debug.
+
            
             perform get-class thru ex-get-class.
 
@@ -971,10 +993,16 @@
                by value agar-object
                    by value AG-MPANE-EXPAND
                      returning agar-widget.
-        
+               
+
                set address of pane-instance  to agar-widget.
-              
-               move pane-divs(1)               to agar-pane-one
+
+            *>    display agar-widget.
+            *>    display pane-divs(1).
+            *>    display pane-divs(2).
+            *>    display function length(pane-instance)
+       
+            *>    move pane-divs(1)               to agar-pane-one
                move pane-divs(2)               to agar-pane-two.
                 
             
@@ -1053,6 +1081,7 @@
 
             call static "AG_RadioNew" using
                 by value agar-object
+                by value agar-null-pointer
                       returning agar-widget.
                            
        ex-addradio.
@@ -1109,11 +1138,12 @@
                 end-call
                 
                 when "combo"
+
                     
               
                set address of combo-instance  to agar-widget 
 
-       
+            *> display "combo" function length(combo-instance)
             *>    display "combo-flags" function length(combo-flags)
             *>    display "combo-tbox" function length(combo-tbox)
             *>    display "combo-tlist" function length(combo-tlist)
@@ -1537,8 +1567,8 @@
           
            call static "AG_SetStyle" using
                by value agar-widget
-                  by content "font-family"
-                   by content agar-text.
+                  by reference "font-family"
+                   by reference agar-text.
        
             
        ex-set-font.
@@ -1549,8 +1579,8 @@
 
             call static "AG_SetStyle" using
                by value agar-widget
-                  by content "font-style"
-                   by content agar-text.
+                  by reference  "font-style"
+                   by reference  agar-text.
                     
        ex-set-fontstyle.
             exit.
@@ -1566,8 +1596,8 @@
        
             call static "AG_SetStyle" using
                by value agar-widget
-                  by content "font-weight"
-                   by content "bold".
+                  by reference  "font-weight"
+                   by reference  "bold".
                     
        ex-set-fontweight.
             exit.
@@ -1579,8 +1609,8 @@
 
             call static "AG_SetStyle" using
                by value agar-widget
-                  by content "border-color"
-                   by content  agar-color.
+                  by reference  "border-color"
+                   by reference  agar-color.
                     
                     
        ex-set-bordercolor.
