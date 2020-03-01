@@ -1002,7 +1002,7 @@
             *>    display pane-divs(2).
             *>    display function length(pane-instance)
        
-            *>    move pane-divs(1)               to agar-pane-one
+               move pane-divs(1)               to agar-pane-one
                move pane-divs(2)               to agar-pane-two.
                 
             
