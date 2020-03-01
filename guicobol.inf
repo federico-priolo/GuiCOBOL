@@ -221,7 +221,7 @@
 
 #addvertic   max=3
 
-             call static "AG_SeparatorNewVert"
+             call "AG_SeparatorNewVert"
                 using by value
                  $PARAM(2)
                      returning omitted
@@ -233,7 +233,7 @@
 #addspaceshoriz    max=3
 
             
-           call static "AG_SpacerNewHoriz"
+           call  "AG_SpacerNewHoriz"
                 using by value 
                   $PARAM(2)
                     
@@ -1337,7 +1337,7 @@
 *
 #set-isdecimal
 
-               CALL  STATIC  "AG_TextboxSetFltOnly" 
+               CALL  "AG_TextboxSetFltOnly" 
                 using by value
                  $PARAM(6)
                     by value
@@ -1353,7 +1353,7 @@
 *
 #set-homogenous
 
-               CALL  STATIC  "AG_BoxSetHomogenous" 
+               CALL  "AG_BoxSetHomogenous" 
                 using by value
                  $PARAM(6)
                     by value
