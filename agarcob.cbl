@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.25  1th march  2020
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.26  3th march  2020
       *
       * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
@@ -29,19 +29,20 @@
 
        working-storage section.
        01 ind                      usage binary-long unsigned.
+       01 ind2                     usage binary-long unsigned.
        
        01 pane-instance based.  
-          05 filler                    pic x(640).
-          05 filler                    pic x(104).
-
+          05 filler                    pic x(712).
+          
           05 pane-type                 usage binary-long sync.
           05 pane-flags                usage binary-long unsigned.
+ 
           05 pane-divs             occurs 2 times usage pointer sync.
        
        
        01 combo-instance based.
-         04 filler                    pic x(640).
-         04 filler                    pic x(104).
+         04 filler                    pic x(712).
+         
          04 resto-combo.
           05 combo-flags               usage binary-long sync.
           05 combo-tbox                usage pointer     sync.
@@ -411,15 +412,10 @@
 
        77 agar-debug                    pic x(10).
 
-       01 tab-char.
-         02 char                       usage binary-char.
        01 tab-numbers.
-        07 tab-number                  pic x(10) occurs 3 times.
         07 tab-alfa                    pic x(10).
         07 tab-num                     pic 9(10).
-        07 ind-alfa                    pic 99.
-        07 ind-beta                    pic 99.
-        07 ind-gamma                   pic 99.
+       
  
        77 local-buffer                 pic x(10) value space. 
        77 local-string                 pic x(100) based. 
@@ -996,12 +992,13 @@
                
 
                set address of pane-instance  to agar-widget.
-
-            *>    display agar-widget.
-            *>    display pane-divs(1).
-            *>    display pane-divs(2).
-            *>    display function length(pane-instance)
-       
+               
+               display function length(pane-instance)
+               
+                display function length(pane-type)
+                display function length(pane-flags)
+               
+            
                move pane-divs(1)               to agar-pane-one
                move pane-divs(2)               to agar-pane-two.
                 
@@ -1020,6 +1017,31 @@
             move agar-widget       to agar-object
 
             perform get-class      thru ex-get-class.
+            
+            move zero to ind
+            
+            inspect agar-text tallying ind for all "("
+            inspect agar-text tallying ind for all ")"
+            if ind = 2
+             perform varying ind from function length(agar-text) 
+              by -1 until ind = zero
+             or agar-text(ind:1) = ")"
+             continue
+             end-perform
+             subtract 1 from ind
+             move zeros to tab-num
+             move length of tab-num to ind2
+             perform varying ind from ind by -1 until ind = zeros
+             or agar-text(ind:1) = "("
+             move agar-text(ind:1) to tab-num(ind2:1)
+             subtract 1 from ind2
+             end-perform
+             
+             if tab-num > 100 move 100 to tab-num.
+             perform varying ind from 1 by 1 until ind > tab-num
+             move "x"       to agar-text(ind:1)
+             end-perform.
+             
 
 
             evaluate agar-class
@@ -1654,7 +1676,7 @@
           
            call static "AG_TextWarning" using
               by content  Z"Segnalazione per l'operatore"
-              by content  agar-text.
+              by reference  agar-text.
 
        ex-set-warning.
             exit.
@@ -1668,7 +1690,7 @@
           
            call static "AG_TextMsg" using
               by value 2
-              by content  agar-text.
+              by reference  agar-text.
                           
        ex-set-info.
             exit.
