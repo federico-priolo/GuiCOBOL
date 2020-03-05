@@ -1242,7 +1242,7 @@
 *
 #set-maxitem
 
-           call static "AG_ComboSizeHint"
+           call  "AG_ComboSizeHint"
             using by value
               $PARAM(6)
                by content "xxxxxxxxxx"
