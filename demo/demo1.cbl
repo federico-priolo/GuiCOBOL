@@ -39,7 +39,7 @@
                  
                 invoke self "addpane" using "v" returning abox abox1.
                  
-                move 1 to "homogenous" of abox.
+                move "1" to "homogenous" of abox.
 
                 invoke abox "addtext" using "First name " returning atext
                 
@@ -73,13 +73,15 @@
                   invoke abutton "additem"  using "male"
                   invoke abutton "additem"  using "female"
                 
+                invoke abox "addbox" using "right panel                "   returning abox
+                 
+                 PERFORM 5 TIMES
+                 Invoke abox using "addspaceshoriz"
+                 END-PERFORM.
 
-                invoke self "addbox" returning abox.
+                 invoke abox "addbox" returning abox.
                 
-                invoke self "addspaceshoriz"
-                 invoke self "addspaceshoriz"
-                 invoke self "addspaceshoriz"
-
+                 
 
                  invoke abox  "addradioto" using "pressedkey"  returning aradio
 
@@ -135,3 +137,17 @@
  
        exit program.
        end program DefaultOpened.
+       
+        
+001130  method-id. pressedkey.
+001160
+001260  procedure division.
+  
+
+                move "you pressed a radio options" to "info" of self
+
+
+001350  exit program.
+
+        end method.
+
