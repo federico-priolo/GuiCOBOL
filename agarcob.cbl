@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.26  3th march  2020
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.26  7th march  2020
       *
       * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
@@ -422,7 +422,7 @@
        77 local                        usage pointer.
             copy "global".
        procedure division.
-
+      *set-debug-off
             ACCEPT agar-debug from environment "GuiCOBOLdebug".
 
             if agar-started not = agar-true
@@ -729,7 +729,7 @@
                when "progress"  
            
              
-            call static "AG_BindInt" using
+            call  "AG_BindInt" using
                by value agar-object
                   by reference z"value"
                    by reference agar-int
@@ -737,7 +737,7 @@
 
                when "check"
                        
-               call static "AG_CheckboxSetState" using
+               call  "AG_CheckboxSetState" using
                by value  
                  agar-object                    
                   by value
@@ -1476,27 +1476,43 @@
        ex-set-text.
             exit. 
 
-       
-     
+      *    set-debug-on                       (starts the tp-cobol-debugger from here)
 
        moveto.
-           
-            call static "AG_FixedMove" 
+
+       
+            move agar-widget       to agar-object
+
+            perform get-class      thru ex-get-class.
+       
+            evaluate agar-class
+
+            when "form" continue
+                
+            when "fixed"
+
+            call  "AG_FixedMove" 
               using by value agar-fixed
                 by value agar-widget
                  by value agar-x
                   by value agar-y
-                    returning omitted.
+                    returning omitted
+
+            when other 
            
-          *>   call static "AG_WidgetSetPosition" using
-          *>      by value agar-widget
-          *>         by value agar-x
-          *>          by value agar-y 
-          *>              returning omitted.
+            call  "AG_WidgetSetPosition" using
+               by value agar-widget
+                  by value agar-x
+                   by value agar-y 
+                     returning omitted
+                     
+             end-evaluate.
                    
          
        ex-moveto.
             exit.
+            
+      *set-debug-off
 
        sizeto.
            
@@ -1759,6 +1775,7 @@
        ex-setsize.
             exit.
     
+      
  
        get-class.
                
@@ -1783,6 +1800,7 @@
                    when "PRO"      MOVE "progress"     to agar-class
                    when "SLI"      MOVE "slider"       to agar-class
                    when "SCR"      MOVE "scroll"       to agar-class
+                   when "FIX"      MOVE "fixed"        to agar-class
                    when other 
                      move 
                       agar-string(4:3)         to agar-class
@@ -1792,7 +1810,8 @@
                 
        ex-get-class.
                exit.
-
+               
+      
 
        agar-do-debug.
 
