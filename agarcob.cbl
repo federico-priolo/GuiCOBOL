@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.26  7th march  2020
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.27  8h march  2020
       *
       * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
@@ -454,6 +454,12 @@
             when "set-height"   perform set-height  thru ex-set-height
             when "get-width"    perform get-width   thru ex-get-width
             when "get-height"   perform get-height  thru ex-get-height
+
+
+            when "set-top"      perform set-top     thru ex-set-top 
+            when "set-left"     perform set-left    thru ex-set-left
+            when "get-top"      perform get-top     thru ex-get-top
+            when "get-left"     perform get-left    thru ex-get-left
 
 
             when "set-value"    perform set-value   thru ex-set-value
@@ -1668,6 +1674,88 @@
       *    set-debug-off                       (starts the tp-cobol-debugger from here)
 
 
+       set-top.
+       
+               call "AG_SetInt" using
+               by value agar-widget
+                  by reference z"top"
+                   by value agar-x
+                     returning  omitted.
+        
+               perform get-top   thru ex-get-top.
+               
+               move agar-int      to agar-x
+               
+               perform get-left   thru ex-get-left.
+               
+               move agar-int      to agar-y.
+               
+               perform moveto    thru ex-moveto.
+
+       ex-set-top.
+       
+            exit.
+
+       set-left.
+           
+               call  "AG_SetInt" using
+               by value agar-widget
+                  by reference z"left"
+                   by value agar-y
+                     returning  omitted.
+               
+               perform get-left thru ex-get-left
+               
+               move agar-int      to agar-y
+               
+               perform get-top    thru ex-get-top
+
+               move agar-int       to agar-x
+               
+               perform moveto    thru ex-moveto.
+       
+                   
+       ex-set-left.
+            exit.
+
+       get-top.
+        
+            call static "ag_defined" using
+               by value agar-widget
+                  by reference z"top"
+                   returning agar-boolean.
+                   
+            if agar-boolean = 1
+            call "AG_GetInt" using
+               by value agar-widget
+                  by reference z"top"
+                   returning agar-int
+             else
+            move zeros to agar-int.
+             
+       ex-get-top.
+            exit.
+
+       get-left.
+       
+            call static "ag_defined" using
+               by value agar-widget
+                  by reference z"left"
+                   returning agar-boolean.
+                   
+            if agar-boolean = 1
+            
+            call  "AG_GetInt" using
+               by value agar-widget
+                  by reference z"left"
+                   returning agar-int
+             else   
+              
+            move zeros to agar-int.
+            
+       ex-get-left.
+            exit.
+
 
 
 
@@ -1882,6 +1970,7 @@
                 
        ex-get-class.
                exit.
+
                
       
 

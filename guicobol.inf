@@ -1651,6 +1651,147 @@
             move "n" to agar-local-debug
             $DOT
 
+*
+* usage:   move 10 to "width" of object
+*
+
+#set-width  min=6 max=6
+
+            move                        
+                                       $PARAM(6)
+                                       to agar-widget
+            move "set-width"           to agar-function
+
+            move                        
+                                       $PARAM(2)
+                                       to agar-width
+            
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move 10 to "height" of object
+*
+
+#set-height  min=6 max=6
+
+            move                        
+                                       $PARAM(6)
+                                       to agar-widget
+            move "set-height"          to agar-function
+
+            move                        
+                                       $PARAM(2)
+                                       to agar-height
+            
+            call agar-cobol
+
+            $DOT
+
+
+#get-width  min=6 max=6
+
+            move                        
+                                       $PARAM(4)
+                                       to agar-widget
+            move "get-width"           to agar-function
+
+            move                       agar-int to
+                                       $PARAM(6)
+            
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move  "height" of object to agar-height
+*
+
+#get-height  min=6 max=6
+
+            move                        
+                                       $PARAM(4)
+                                       to agar-widget
+            move "get-height"          to agar-function
+
+            move                       agar-int to
+                                       $PARAM(6)
+            
+            call agar-cobol
+
+            $DOT
+
+
+#set-top min=6 max=6
+
+            move                        
+                                       $PARAM(6)
+                                       to agar-widget
+            move "set-top"           to agar-function
+
+            move                        
+                                       $PARAM(2)
+                                       to agar-x
+            
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move 10 to "left" of object
+*
+
+#set-left  min=6 max=6
+
+            move                        
+                                       $PARAM(6)
+                                       to agar-widget
+            move "set-left"            to agar-function
+
+            move                        
+                                       $PARAM(2)
+                                       to agar-y
+            
+            call agar-cobol
+
+            $DOT
+
+
+#get-top    min=6 max=6
+
+            move                        
+                                       $PARAM(4)
+                                       to agar-widget
+            move "get-top"             to agar-function
+
+            move                       agar-int to
+                                       $PARAM(6)
+            
+            call agar-cobol
+
+            $DOT
+
+*
+* usage:   move  "left" of object to agar-height
+*
+
+#get-left   min=6 max=6
+
+            move                        
+                                       $PARAM(4)
+                                       to agar-widget
+            move "get-left"            to agar-function
+
+            move                       agar-int to
+                                       $PARAM(6)
+            
+            call agar-cobol
+
+            $DOT
+
+
+
 
 #END GUICOBOL.INF FILE
  
