@@ -51,11 +51,10 @@
                 move "x(30)" to "render" of atext
                 
                 move "write your first name here"      to "text" OF atext.
+               
+                invoke atext "refresh"
                 
-
-                 invoke atext "refresh"
-                
-                 invoke abox "addtext" using "Second name " returning atext
+                invoke abox "addtext" using "Second name " returning atext
                  
                  move "90%" to "fontsize" of atext.
 
@@ -64,7 +63,21 @@
 
                 invoke self "addspaceshoriz"
 
-                 invoke abox "addcombo" using "Gender"   returning abutton
+                invoke abox1 "addfixed" returning abox.
+                               
+                invoke abox "size" using 400 110
+                      
+                move "gray" to "backcolor" of abox
+                move "red" to "color" of abox
+                
+
+                invoke abox "addcombo" using "Gender"   returning abutton
+                 
+                  
+                invoke abutton "size" using 300 50
+                 
+                invoke abutton "move" using 10 100
+                
                  
                   move "x(10)" to "render" of abutton.
                  
