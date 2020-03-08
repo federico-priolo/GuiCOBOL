@@ -1,0 +1,33 @@
+
+for linux environment due a architecture compiler dependent you have to set the fille to 712 (windows) ->  744 (linux)
+
+working-storage section.
+ 01 ind                      usage binary-long unsigned.
+ 01 pane-instance based.  
+    05 filler                    pic x(744).
+    05 pane-type                 usage binary-long sync.
+    05 pane-flags                usage binary-long unsigned.
+    05 pane-divs             occurs 2 times usage pointer sync.
+    05 filler                    pic x(128).
+ 
+ 01 combo-instance based.
+    05 filler                    pic x(744).
+   04 resto-combo.
+    05 combo-flags               usage binary-long sync.
+    05 combo-tbox                usage pointer     sync.
+    05 combo-button              usage pointer.
+    05 combo-tlist               usage pointer.
+    05 combo-panel               usage pointer.
+    05 combo-wsaved              usage binary-long sync.
+    05 combo-hsaved              usage binary-long.
+    05 combo-wprelist            usage binary-long.
+    05 combo-hprelist            usage binary-long.
+
+
+
+  01 window-instance based.
+   04 filler                     pic x(744).
+   04 resto-win.
+    05 win-flags                 usage binary-long sync.
+    
+
