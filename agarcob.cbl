@@ -452,6 +452,9 @@
             when "get-caption"  perform get-caption thru ex-get-caption
             when "set-width"    perform set-width   thru ex-set-width
             when "set-height"   perform set-height  thru ex-set-height
+            when "get-width"    perform get-width   thru ex-get-width
+            when "get-height"   perform get-height  thru ex-get-height
+
 
             when "set-value"    perform set-value   thru ex-set-value
             
@@ -853,6 +856,7 @@
             exit.
 
        
+       
        addbox.
  
            call static "AG_BoxNewHoriz" using
@@ -993,11 +997,9 @@
 
                set address of pane-instance  to agar-widget.
                
-               display function length(pane-instance)
-               
-                display function length(pane-type)
-                display function length(pane-flags)
-               
+      *          display function length(pane-instance)
+      *          display function length(pane-type)
+      *          display function length(pane-flags)
             
                move pane-divs(1)               to agar-pane-one
                move pane-divs(2)               to agar-pane-two.
@@ -1476,7 +1478,7 @@
        ex-set-text.
             exit. 
 
-      *    set-debug-on                       (starts the tp-cobol-debugger from here)
+      
 
        moveto.
 
@@ -1512,7 +1514,7 @@
        ex-moveto.
             exit.
             
-      *set-debug-off
+      
 
        sizeto.
            
@@ -1524,8 +1526,8 @@
 
                when "form"
            
-		     call "AG_WindowSetGeometryAligned" 
-		      using by value agar-form 0 agar-width agar-height 
+                call "AG_WindowSetGeometryAligned" 
+                using by value agar-form 0 agar-width agar-height 
                returning omitted
                end-call
                
@@ -1578,26 +1580,96 @@
        ex-sizeto.
             exit.
 
+      *    set-debug-on                       (starts the tp-cobol-debugger from here)
+
        set-width.
-           
-           call static "AG_WidgetSetSize" using
+       
+               call "AG_SetInt" using
                by value agar-widget
-                  by reference agar-width
-                   by reference agar-use-height.
-                   
+                  by reference z"width"
+                   by value agar-width
+                     returning  omitted.
+        
+               perform get-width thru ex-get-width.
+               
+               move agar-int      to agar-width
+               
+               perform get-height thru ex-get-height.
+               
+               move agar-int      to agar-height.
+               
+               perform sizeto    thru ex-sizeto.
+
+
        ex-set-width.
             exit.
 
-
        set-height.
            
-           call static "AG_WidgetSetSize" using
+               call  "AG_SetInt" using
                by value agar-widget
-                  by reference agar-use-width
-                   by reference agar-height.
+                  by reference z"height"
+                   by value agar-height
+                     returning  omitted.
+               
+               perform get-height thru ex-get-height.
+               
+               move agar-int      to agar-height.
+               
+               perform get-width thru ex-get-width.
+
+               move agar-int       to agar-width
+               
+               perform sizeto    thru ex-sizeto.
+                     
                    
        ex-set-height.
             exit.
+
+       get-width.
+        
+            call static "ag_defined" using
+               by value agar-widget
+                  by reference z"width"
+                   returning agar-boolean.
+                   
+            if agar-boolean = 1
+            call "AG_GetInt" using
+               by value agar-widget
+                  by reference z"width"
+                   returning agar-int
+             else
+            move zeros to agar-int.
+             
+       ex-get-width.
+            exit.
+
+       get-height.
+       
+            call static "ag_defined" using
+               by value agar-widget
+                  by reference z"height"
+                   returning agar-boolean.
+                   
+            if agar-boolean = 1
+            
+            call  "AG_GetInt" using
+               by value agar-widget
+                  by reference z"height"
+                   returning agar-int
+             else   
+              
+            move zeros to agar-int.
+            
+       ex-get-height.
+            exit.
+
+
+      *    set-debug-off                       (starts the tp-cobol-debugger from here)
+
+
+
+
 
        set-font.
 
