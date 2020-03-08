@@ -3,6 +3,7 @@
       *---------------------------------------------------------------------
       *
       * Gui builder for OPENCOBOL
+      * pre-release agar    26 february  2020  0.1.2.24  line of error.  *
       * pre-release agar    26 february  2020  0.1.2.23  fixedcolor      *
       * pre-release agar    22 february  2020  0.1.2.23      
       * pre-release agar     1 August    2019  0.1.2.18      
@@ -1251,6 +1252,7 @@
                          " per " USAGE-PARAM(1)
                          " " CONTA-PARAM " invece di " MIN-FUNZIONE
                                             " o " MAX-FUNZIONE
+                                            " at " COUNT-LINE " line "
                        GO TO FINE-CERCA-DO
                       END-IF
 
