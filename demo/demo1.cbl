@@ -15,7 +15,7 @@
         01 alabel       usage pointer external.
         01 aradio       usage pointer external.
         01 acheck       usage pointer external.
-        
+        01 i           pic x(10).
         
 000240  PROCEDURE DIVISION.
 000260
@@ -71,12 +71,24 @@
                 move "red" to "color" of abox
                 
 
-                invoke abox "addcombo" using "Gender"   returning abutton
+                invoke abox "addcombo" using z"Gender"   returning abutton
                  
+                   
+                move 150 to "width" of abutton
+                move 25  to "height" of abutton
+                
+                move "width" of abutton to i 
+                move i to "text" of atext.
+                
                   
-                invoke abutton "size" using 300 50
+      *invoke abutton "size" using 300 25
                  
-                invoke abutton "move" using 10 100
+      *          invoke abutton "move" using 10 100
+                
+                   
+                move 10   to "top" of abutton
+                move 100  to "left" of abutton
+                
                 
                  
                   move "x(10)" to "render" of abutton.
@@ -86,10 +98,10 @@
                   invoke abutton "additem"  using "male"
                   invoke abutton "additem"  using "female"
                 
-                invoke abox "addbox" using "right panel                "   returning abox
+                invoke abox "addbox" returning abox
                  
                  PERFORM 5 TIMES
-                 Invoke abox using "addspaceshoriz"
+                 Invoke abox "addspaceshoriz"
                  END-PERFORM.
 
                  invoke abox "addbox" returning abox.
