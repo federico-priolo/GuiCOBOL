@@ -1732,7 +1732,7 @@
 
             move                        
                                        $PARAM(2)
-                                       to agar-x
+                                       to agar-y
             
             call agar-cobol
 
@@ -1751,7 +1751,7 @@
 
             move                        
                                        $PARAM(2)
-                                       to agar-y
+                                       to agar-x
             
             call agar-cobol
 

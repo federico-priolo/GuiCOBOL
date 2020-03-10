@@ -1679,16 +1679,16 @@
                call "AG_SetInt" using
                by value agar-widget
                   by reference z"top"
-                   by value agar-x
+                   by value agar-y
                      returning  omitted.
         
                perform get-top   thru ex-get-top.
                
-               move agar-int      to agar-x
+               move agar-int      to agar-y
                
                perform get-left   thru ex-get-left.
                
-               move agar-int      to agar-y.
+               move agar-int      to agar-x.
                
                perform moveto    thru ex-moveto.
 
@@ -1701,16 +1701,16 @@
                call  "AG_SetInt" using
                by value agar-widget
                   by reference z"left"
-                   by value agar-y
+                   by value agar-x
                      returning  omitted.
                
                perform get-left thru ex-get-left
                
-               move agar-int      to agar-y
+               move agar-int     to agar-x
                
-               perform get-top    thru ex-get-top
+               perform get-top   thru ex-get-top
 
-               move agar-int       to agar-x
+               move agar-int     to agar-y
                
                perform moveto    thru ex-moveto.
        
