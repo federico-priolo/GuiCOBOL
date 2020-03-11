@@ -4,7 +4,7 @@
       *
       * agar connector for GNUCOBOL
       *
-      * FIRST 1th AUGUST   0.1.0  LAST 0.1.27  8h march  2020
+      * FIRST 1th AUGUST   0.1.0  LAST 0.1.27  11th march  2020
       *
       * Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
       *
@@ -530,6 +530,7 @@
                                    thru ex-get-property
 
             when "bindto"       perform bindto      thru ex-bindto
+            when "find"         perform find        thru ex-find
 
             when "refresh"      perform refresh     thru ex-refresh
 
@@ -1472,7 +1473,17 @@
                          
        ex-bindto.
             exit.
-            
+       
+       find.
+          
+             call  "AG_ObjectFind" 
+              using by value agar-form
+                  by value agar-text
+                    returning agar-widget.
+                         
+       ex-find.
+            exit.
+              
        set-text.
 
             PERFORM asciiZ thru ex-asciiZ.   

@@ -1790,7 +1790,26 @@
 
             $DOT
 
+*
+* usage:   INVOKE parent "find"  using "name" RETURNING object
+*
+#find       min=7 max=7
 
+            move  agar-form to 
+                                       $PARAM(2)
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            move "find"                to agar-function
+          
+            call agar-cobol
+
+            move                       agar-widget to
+                                       $PARAM(7)
+                                                 
+            $DOT
+
+*
 
 
 #END GUICOBOL.INF FILE
