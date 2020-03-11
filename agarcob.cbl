@@ -1475,11 +1475,11 @@
             exit.
        
        find.
-          
-             call  "AG_ObjectFind" 
-              using by value agar-form
-                  by value agar-text
-                    returning agar-widget.
+                          
+             call "AG_ObjectFind" 
+              using by value agar-object
+                     by value agar-text
+                      returning agar-widget.
                          
        ex-find.
             exit.

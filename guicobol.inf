@@ -1795,8 +1795,10 @@
 *
 #find       min=7 max=7
 
-            move  agar-form to 
+            move 
                                        $PARAM(2)
+                                       to agar-object                      
+
             move 
                                        $PARAM(5)
                                        to agar-text
