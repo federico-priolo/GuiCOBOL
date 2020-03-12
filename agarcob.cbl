@@ -411,7 +411,7 @@
        
 
        77 agar-debug                    pic x(10).
-
+       01 stringa                      pic x(100) value space.  
        01 tab-numbers.
         07 tab-alfa                    pic x(10).
         07 tab-num                     pic 9(10).
@@ -1475,12 +1475,15 @@
             exit.
        
        find.
-                          
-             call "AG_ObjectFind" 
-              using by value agar-object
-                     by value agar-text
+             
+
+             move agar-text to stringa
+             
+             call  "AG_ObjectFind" 
+                using by value agar-object
+                    by reference stringa
                       returning agar-widget.
-                         
+                                                
        ex-find.
             exit.
               
@@ -1875,7 +1878,7 @@
            if agar-text = spaces
               move z"informazioni per l'operatore" to agar-text.
           
-           call static "AG_TextMsg" using
+           call  "AG_TextMsg" using
               by value 2
               by reference  agar-text.
                           
