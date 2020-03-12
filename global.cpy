@@ -63,7 +63,7 @@
         01 result            usage binary-long   external.
         01 agar-started       pic 9               external.
         01 agar-cobol         pic x(7)            value "agarcob".
-        01 agar-null         usage unsigned-short value null.
+        01 agar-null         usage unsigned-short value 0.
       
 
         01 agar-true          pic 9 value 1.
