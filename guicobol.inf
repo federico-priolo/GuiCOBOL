@@ -513,6 +513,32 @@
                 end-call
 
             $DOT
+
+
+
+*
+* usage:   move  "root"  of object to agar-object
+*
+#get-parent min=6 max=6
+
+                call STATIC "ag_object_root"
+                  using by value 
+                    $PARAM(4)
+                     returning 
+                       $PARAM(6)
+                end-call
+
+            $DOT
+
+
+
+
+
+
+
+
+
+
 *
 * usage:   move  "name"  of object to agar-text
 *
