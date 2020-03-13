@@ -1850,7 +1850,7 @@
 
            PERFORM asciiZ thru ex-asciiZ.                 
           
-           call static "AG_TextError" using
+           call "AG_TextError" using
               by content  agar-text.
 
        ex-set-error.
@@ -1864,7 +1864,7 @@
            if agar-text = spaces
               move z"Avviso generico per l'operatore" to agar-text.
           
-           call static "AG_TextWarning" using
+           call "AG_TextWarning" using
               by content  Z"Segnalazione per l'operatore"
               by reference  agar-text.
 
