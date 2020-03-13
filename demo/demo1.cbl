@@ -39,9 +39,17 @@
                  
                 invoke self "addpane" using "v" returning abox abox1.
                  
-                move "1" to "homogenous" of abox.
+                move agar-true  to "homogenous" of abox.
+
+                invoke self "addlabel" using "this is a label" returning alabel. 
+                
+                move "name" of alabel to stringa.
+                
+                display "label name:" stringa.
 
                 invoke abox "addtext" using "First name " returning atext
+                
+                
                 
                 move "90%" to "fontsize" of atext.
 
@@ -54,8 +62,15 @@
                
                 invoke atext "refresh"
                 
+                
                 invoke abox "addtext" using "Second name " returning atext
+                
+                 move "federico" to "name" of atext.
+                
+                 move "name" of atext to stringa.
+                 display "edit:" stringa.
                  
+                                                  
                  move "90%" to "fontsize" of atext.
 
                 move "blue" to "backcolor" of atext.
@@ -64,15 +79,27 @@
                 invoke self "addspaceshoriz"
 
                 invoke abox1 "addfixed" returning abox.
-                               
+                
+                                               
                 invoke abox "size" using 400 110
+                              
+                
                       
                 move "gray" to "backcolor" of abox
                 move "red" to "color" of abox
                 
 
-                invoke abox "addcombo" using z"Gender"   returning abutton
+                 invoke abox  "addbuttonto" using "+" "incrementa" returning abutton
                  
+                 move "button" to "name" of abutton
+                 
+                 
+                 move 10   to "top" of abutton
+                 move 280  to "left" of abutton
+                 move 150   to "width" of abutton
+                 move 25   to "height" of abutton
+
+                invoke abox "addcombo" using z"Gender"   returning abutton
                    
                 move 150 to "width" of abutton
                 move 25  to "height" of abutton
@@ -97,15 +124,20 @@
                  
                   invoke abutton "additem"  using "male"
                   invoke abutton "additem"  using "female"
+                  
+                  
+                  
+                  
                 
                 invoke abox "addbox" returning abox
                  
                  PERFORM 5 TIMES
                  Invoke abox "addspaceshoriz"
                  END-PERFORM.
+                 
+                 
 
-                 invoke abox "addbox" returning abox.
-                
+                 invoke abox1 "addbox" returning abox.
                  
 
                  invoke abox  "addradioto" using "pressedkey"  returning aradio
@@ -117,6 +149,7 @@
                  invoke aradio  "additem"  using "choice four"
                  invoke aradio  "additem"  using "choice five"
                 
+                 
 
            
                  invoke self "show"
@@ -138,12 +171,11 @@
 001160
 001260  procedure division.
   
-      *               invoke self "close".
+                     invoke self "close".
 
-      *               invoke self  "stoprun".
+                     invoke self  "stoprun".
 
-                   display "you are exitform".
-
+      
 
 001350  exit program.
 001360  end program exitForm.
@@ -176,3 +208,63 @@
 
         end method.
 
+
+        identification division.
+        program-id. incrementa.
+        data division.
+        working-storage section.
+        
+        01 stringa       pic is  x(100).
+
+       01 ag-event based.
+      
+          05 event-name                pic x(32).
+          05 event-flags               usage binary-long unsigned sync.
+          05 event-function            pic x(624) sync.
+          05 filler                    pic x(4).
+
+          05 event-argc                usage binary-long sync.
+          05 event-argc0               usage binary-long sync.
+          05 filler                    pic x(8).
+          05 event-argv occurs 7 times.
+            10 variable-name           pic x(36).
+            10 variable-type           usage binary-long sync.
+            10 variable-mutex          usage pointer sync.
+            10 variable-info.
+               15 variable-key         usage pointer.
+               15 variable-var         usage pointer.
+            10 variable-function       pic x(624).
+            10 variable-data.
+               15 variable-ptr         usage pointer.
+               15 filler               pic x(8).
+            10 variable-vars           pic x(16).
+          05 events                    pic x(16).
+
+        linkage section.
+        01 evnt usage pointer.
+
+      *        procedure division extern using by value evnt returning omitted.
+        procedure division.
+        
+
+                move "increment" to "info" of self
+
+                move null to atext
+                
+                move "/box0/federico/" to stringa.
+                
+                invoke self "find" using stringa returning atext
+
+
+                 if atext not = null
+                 move "successfull " to "info" of self
+                 move "name" of atext to stringa
+                  move stringa   to "TEXT" of atext
+                  else
+                  move z"errors" to "error" of self.
+                 
+                 
+
+001350  exit program.
+
+        end program incrementa.
