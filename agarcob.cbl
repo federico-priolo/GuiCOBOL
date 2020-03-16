@@ -410,8 +410,8 @@
 
        
 
-       77 agar-debug                    pic x(10).
-       01 stringa                      pic x(100) value space.  
+       77 agar-debug                   pic x(10).
+       01 stringa                      pic x(100) value space. 
        01 tab-numbers.
         07 tab-alfa                    pic x(10).
         07 tab-num                     pic 9(10).
@@ -1476,13 +1476,26 @@
        
        find.
              
-
              move agar-text to stringa
-             
-             call  "AG_ObjectFind" 
+            
+             display "find su " agar-form " per " 
+                function trim(stringa)
+            
+             call "ag_object_find_child" 
                 using by value agar-object
-                    by reference stringa
+                    by content stringa
                       returning agar-widget.
+                      
+       
+                      
+      *       move agar-text to stringa
+             
+      *             call  "AG_ObjectFind" 
+      *                using by value agar-object
+      *                    by reference stringa
+      *                      returning agar-widget.      
+      *                      
+      *                      display "finisco con " agar-widget.
                                                 
        ex-find.
             exit.
@@ -1850,7 +1863,7 @@
 
            PERFORM asciiZ thru ex-asciiZ.                 
           
-           call "AG_TextError" using
+           call static "AG_TextError" using
               by content  agar-text.
 
        ex-set-error.
@@ -1864,7 +1877,7 @@
            if agar-text = spaces
               move z"Avviso generico per l'operatore" to agar-text.
           
-           call "AG_TextWarning" using
+           call static "AG_TextWarning" using
               by content  Z"Segnalazione per l'operatore"
               by reference  agar-text.
 

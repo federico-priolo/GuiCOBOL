@@ -1412,7 +1412,7 @@
 *
 #set-min
                    
-            call static "AG_BindInt" using
+            call  "AG_BindInt" using
                by value 
                  $PARAM(6)
                   by reference z"min"
@@ -1501,7 +1501,7 @@
 
 #set-incrementdecimal
                    
-            call "AG_SetFloat" using
+            call  "AG_SetFloat" using
                by value 
                  $PARAM(6)
                   by reference z"inc"
