@@ -3,12 +3,18 @@
 000030  ENVIRONMENT DIVISION.
 000040  DATA DIVISION.
         WORKING-STORAGE SECTION.
+        01 xagar-struct        usage pointer.
+000110  01 buffer usage pointer.
+000110  01 xagar-stringa  pic x(100) based.
+        
+
         01 stringa       pic is  x(100).
         01 ageneric        usage pointer external.
         01 attivo        usage pointer external.
         01 abox         usage pointer external.
         01 abox1         usage pointer external.
         01 atext        usage pointer external.
+        01 atext1       usage pointer external.
         01 abutton      usage pointer external.
         01 abutton1     usage pointer external.
         01 abutton2     usage pointer external.
@@ -43,14 +49,11 @@
 
                 invoke self "addlabel" using "this is a label" returning alabel. 
                 
-                move "name" of alabel to stringa.
-                
-                display "label name:" stringa.
 
                 invoke abox "addtext" using "First name " returning atext
                 
-                
-                
+                move "federico" to "name" of atext.
+                                
                 move "90%" to "fontsize" of atext.
 
                 move "blue" to "backcolor" of atext.
@@ -62,19 +65,13 @@
                
                 invoke atext "refresh"
                 
+                invoke abox "addtext" using "Second name " returning atext1
                 
-                invoke abox "addtext" using "Second name " returning atext
-                
-                 move "federico" to "name" of atext.
-                
-                 move "name" of atext to stringa.
-                 display "edit:" stringa.
-                 
                                                   
-                 move "90%" to "fontsize" of atext.
+                 move "90%" to "fontsize" of atext1.
 
-                move "blue" to "backcolor" of atext.
-                move "yellow" to "textcolor" of atext.
+                move "blue" to "backcolor" of atext1.
+                move "yellow" to "textcolor" of atext1.
 
                 invoke self "addspaceshoriz"
 
@@ -212,9 +209,11 @@
         identification division.
         program-id. incrementa.
         data division.
+        
+        
+        
         working-storage section.
         
-        01 stringa       pic is  x(100).
 
        01 ag-event based.
       
@@ -248,21 +247,14 @@
         
 
                 move "increment" to "info" of self
-
-                move null to atext
                 
-                move "/box0/federico/" to stringa.
+                invoke self "find" using "federico" returning agar-widget
+                      
+                display "esco con" agar-widget.
                 
-                invoke self "find" using stringa returning atext
+                                
+                
 
-
-                 if atext not = null
-                 move "successfull " to "info" of self
-                 move "name" of atext to stringa
-                  move stringa   to "TEXT" of atext
-                  else
-                  move z"errors" to "error" of self.
-                 
                  
 
 001350  exit program.
