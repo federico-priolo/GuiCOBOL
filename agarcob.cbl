@@ -1359,12 +1359,11 @@
                 using by value agar-object
                   returning agar-struct.
                 
-                set address of agar-string  to null.
-
                 set address of agar-string  TO agar-struct.
 
                 move agar-string      to agar-text.
-                     
+                
+                                     
        ex-get-name.
             exit. 
 
@@ -1476,11 +1475,11 @@
        
        find.
              
+             perform asciiZ thru ex-asciiz.
+             
              move agar-text to stringa
-            
-             display "find su " agar-form " per " 
-                function trim(stringa)
-            
+             
+                          
              call "ag_object_find_child" 
                 using by value agar-object
                     by content stringa

@@ -533,12 +533,6 @@
 
 
 
-
-
-
-
-
-
 *
 * usage:   move  "name"  of object to agar-text
 *
@@ -550,10 +544,11 @@
             move "get-name"            to agar-function
 
             call agar-cobol
+            cancel agar-cobol
 
             move                       agar-text to
                                        $PARAM(6)
-   
+                                       
             $DOT
 
 *
