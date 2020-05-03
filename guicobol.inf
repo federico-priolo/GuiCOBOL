@@ -544,7 +544,6 @@
             move "get-name"            to agar-function
 
             call agar-cobol
-            cancel agar-cobol
 
             move                       agar-text to
                                        $PARAM(6)
@@ -1819,12 +1818,11 @@
             move 
                                        $PARAM(2)
                                        to agar-object                      
-
             move 
                                        $PARAM(5)
                                        to agar-text
             move "find"                to agar-function
-          
+         
             call agar-cobol
 
             move                       agar-widget to
