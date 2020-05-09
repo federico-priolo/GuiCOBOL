@@ -22,7 +22,7 @@
 
 #addscrollview max=5
 
-          move 
+            move 
             $PARAM(2)                  
                to agar-object
 
@@ -1830,7 +1830,25 @@
                                                  
             $DOT
 
+
+
 *
+* usage:   move  "insert a valid name"  to "prompt" of object
+*
+#set-prompt
+
+            move 
+                                       $PARAM(6)
+                                       to agar-object                      
+            move 
+                                       $PARAM(2)
+                                       to agar-text
+            move "set-prompt"          to agar-function
+         
+            call agar-cobol
+             
+            $DOT
+
 
 
 #END GUICOBOL.INF FILE

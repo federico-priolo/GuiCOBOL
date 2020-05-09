@@ -520,6 +520,7 @@
 005180      when "get-text"     perform get-text    thru ex-get-text
 005190
 005200      when "set-render"   perform set-render  thru ex-set-render
+005200      when "set-prompt"   perform set-prompt  thru ex-set-prompt
 005210  
 005220         
 005230      when "set-name"     perform set-name    thru ex-set-name
@@ -1307,6 +1308,18 @@
 012970 
 012980 ex-set-name.
 012990      exit. 
+
+012890 set-prompt.
+012900
+012910      PERFORM asciiZ thru ex-asciiZ.
+012920           
+012930      call static "AG_TextboxSetPlaceholder" using
+012940         by value agar-object
+012950            by reference   agar-text.
+
+012980 ex-set-prompt.
+012990      exit. 
+013000
 013000
 013010
 013020 set-position.
