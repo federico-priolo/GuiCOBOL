@@ -1,5 +1,5 @@
 *
-** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 22.02.2020
+** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 10.05.2020 (pre-release no history is left)
 *
 
 *
@@ -1847,6 +1847,25 @@
          
             call agar-cobol
              
+            $DOT
+
+
+*
+* usage:   INVOKE widget "connect" using buffer
+*
+#connect max=5
+
+             move  length of 
+                                       $PARAM(5)
+                                       to agar-size
+       
+            call  "AG_TextboxBindASCII" 
+              using by value 
+                    $PARAM(2)
+                    by reference 
+                    $PARAM(5)
+                    by reference agar-size
+ 
             $DOT
 
 

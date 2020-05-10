@@ -533,7 +533,7 @@
 005300      when "get-property" perform get-property 
 005310                             thru ex-get-property
 005320
-005330      when "bindto"       perform bindto      thru ex-bindto
+
 005340      when "find"         perform find        thru ex-find
 005350
 005360      when "refresh"      perform refresh     thru ex-refresh
@@ -1487,18 +1487,6 @@
 014620
 014630
 014640
-014650 bindto.
-014660    
-014670       move length of agar-text   to agar-size
-014680       
-014690       call static "AG_TextboxBindASCII" 
-014700        using by value agar-widget
-014710              by reference agar-text
-014720              by reference agar-size.
-014730                   
-014740 ex-bindto.
-014750      exit.
-014760      
 014770
 014780 find.
 014790            
