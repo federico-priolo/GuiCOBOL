@@ -528,6 +528,7 @@
 005250      when "get-focused"  perform get-focused thru ex-get-focused
 
 005240      when "get-cursor"   perform get-cursor  thru ex-get-cursor
+005240      when "set-cursor"   perform set-cursor  thru ex-set-cursor
 005270
 005280      when "addproperty"  perform addproperty 
 005290                             thru ex-addproperty
@@ -1404,7 +1405,15 @@
 013680 ex-get-cursor.
 013690      exit. 
 013700
-
+       set-cursor.
+013580
+013590         call "AG_TextboxSetCursorPos" 
+013600          using by value agar-object
+013610            by value agar-int.
+                      
+013680 ex-set-cursor.
+013690      exit. 
+013700
 013710
 013720 addproperty.
 013730
