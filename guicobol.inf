@@ -1868,7 +1868,18 @@
  
             $DOT
 
-
+*
+* usage:   move  "cursor"  of object to agar-int
+*
+#get-cursor
+            move
+                                       $PARAM(4)
+                                       to agar-object
+            move "get-cursor"          to agar-function
+            call agar-cobol
+            move  agar-int to 
+                                       $PARAM(6)
+            $DOT
 
 #END GUICOBOL.INF FILE
  

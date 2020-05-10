@@ -526,7 +526,8 @@
 005230      when "set-name"     perform set-name    thru ex-set-name
 005240      when "get-name"     perform get-name    thru ex-get-name
 005250      when "get-focused"  perform get-focused thru ex-get-focused
-005260
+
+005240      when "get-cursor"   perform get-cursor  thru ex-get-cursor
 005270
 005280      when "addproperty"  perform addproperty 
 005290                             thru ex-addproperty
@@ -1393,6 +1394,17 @@
 013680 ex-get-name.
 013690      exit. 
 013700
+
+013570 get-cursor.
+013580
+013590         call "AG_TextboxGetCursorPos" 
+013600          using by value agar-object
+013610            returning agar-int.
+                      
+013680 ex-get-cursor.
+013690      exit. 
+013700
+
 013710
 013720 addproperty.
 013730
