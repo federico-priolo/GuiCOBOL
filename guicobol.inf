@@ -1,6 +1,7 @@
 *
 ** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 10.05.2020 (pre-release no history is left)
 *
+*
 
 *
 * usage:   INVOKE SUPER "addform" RETURNING object
@@ -1896,6 +1897,87 @@
             move "set-cursor"          to agar-function
             call agar-cobol
             $DOT
+
+
+*
+*
+* usage:   INVOKE object "keydown" using procedure
+*
+
+#keydown   min=5 max=5
+
+      *
+      **  link the event to the required procedure
+      *
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+
+            set agar-callback          to entry
+                                          $PARAM(5)
+
+            move
+                 $PARAM(5)
+                                       TO agar-procedure
+            move "textbox-prechg" & X"00"   to agar-event
+            move "setevent"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+
+#keyup   min=5 max=5
+
+      *
+      **  link the event to the required procedure
+      *
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+
+            set agar-callback          to entry
+                                          $PARAM(5)
+
+            move
+                 $PARAM(5)
+                                       TO agar-procedure
+            move "textbox-postchg" & X"00"   to agar-event
+            move "setevent"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+
+#keyreturn min=5 max=5
+
+      *
+      **  link the event to the required procedure
+      *
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+
+            set agar-callback          to entry
+                                          $PARAM(5)
+
+            move
+                 $PARAM(5)
+                                       TO agar-procedure
+            move "textbox-return" & X"00"   to agar-event
+            move "setevent"            to agar-function
+
+            call agar-cobol
+
+            $DOT
+
+
+
+
 
 
 #END GUICOBOL.INF FILE
