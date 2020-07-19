@@ -66,11 +66,11 @@
         01 agar-null         usage unsigned-short value 0.
       
 
-        01 agar-true          pic 9 value 1.
-        01 agar-false         pic 9 value zeros.
-        01 agar-on            pic 9 value 1.
-        01 agar-off           pic 9 value zeros.
-      
+        01 agar-true          usage signed-short value 1.
+        01 agar-false         usage signed-short value zeros.
+        01 agar-on            usage signed-short value 1.
+        01 agar-off           usage signed-short value zeros.
+
 
  
  

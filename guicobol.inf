@@ -86,10 +86,11 @@
 #disable   max=3
 
 
-             call static "AG_WidgetDisable"
-                using by value 
+            move
                  $PARAM(2)
-             end-call
+                                       to agar-object
+            move "disable"             to agar-function
+            call agar-cobol
 
             $DOT
 
@@ -100,11 +101,12 @@
 
 #enable    max=3
 
-           
-             call static "AG_WidgetEnable"
-                using by value 
+            move
                  $PARAM(2)
-             end-call
+                                       to agar-object
+            move "enable"              to agar-function
+            call agar-cobol
+
              
             $DOT
 
@@ -1175,6 +1177,61 @@
 
             $DOT
 
+
+*
+* usage:   INVOKE menu "addnode" using agar-text returning anode
+*
+#addnode max=7
+
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+
+            move "addnode"             to agar-function
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+
+          
+            call agar-cobol
+
+            $DOT
+
+
+*
+* usage:   INVOKE menu "addlink" using agar-text  icona procedure data returning anode
+*
+#addlink max=10
+
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+
+            move "addlink"             to agar-function
+            
+            move                       
+                                       $PARAM(7)
+            to                         agar-event
+          
+            move                       
+                                       $PARAM(8)
+            to                         agar-value
+          
+            call agar-cobol
+            move                       agar-widget to
+                                       $PARAM(10)
+            
+
+            $DOT
+
+
+
 *
 * usage:   INVOKE parent "addfixed"  RETURNING object
 *
@@ -1969,13 +2026,48 @@
                  $PARAM(5)
                                        TO agar-procedure
             move "textbox-return" & X"00"   to agar-event
-            move "setevent"            to agar-function
+            move "addevent"            to agar-function
 
             call agar-cobol
 
             $DOT
 
 
+
+*
+* usage:   INVOKE object "addmenu" RETURNING object
+*
+
+#addmenu  max=5
+         
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+            
+            move "addmenu"             to agar-function
+            call agar-cobol
+            
+            move                       agar-widget to
+                                       $PARAM(5)
+            $DOT
+
+*
+* usage:   MOVE "root"" of menu TO VARIABLE
+*                                        6       7
+#get-root
+
+            move 
+               $PARAM(4)
+                                       to agar-object
+            move "get-root"            to agar-function
+
+            call agar-cobol
+
+            move  agar-root  to
+                                       $PARAM(6)
+                                       
+
+            $DOT
 
 
 

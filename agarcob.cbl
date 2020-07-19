@@ -4,7 +4,7 @@
 000040*
 000050* agar connector for GNUCOBOL
 000060*
-000070* FIRST 1th AUGUST   0.1.0  LAST 0.1.27  11th march  2020
+000070* FIRST 1th AUGUST   0.1.0  LAST 19.07.2020
 000080*
 000090* Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
 000100*
@@ -40,6 +40,16 @@
 000380    05 pane-flags                usage binary-long unsigned.
 000390
 000400    05 pane-divs             occurs 2 times usage pointer sync.
+
+
+
+        01 menu-instance based.
+          05 filler                    pic x(712).
+          05 menu-flags                usage binary-long sync.
+          05 menu-style                usage binary-long sync.
+          05 menu-root                 usage pointer sync.
+          
+
 000410 
 000420 
 000430 01 combo-instance based.
@@ -376,7 +386,7 @@
 003740    05 AG-TEXTBOX-WORDWRAP      usage binary-long value h'040000'.
 003750    05 AG-TEXTBOX-NOPOPUP       usage binary-long value h'080000'.
 003760    05 AG-TEXTBOX-MULTILINGUAL  usage binary-long value h'100000'.
-003770    05 AG-TEXTBOX-DEFAULT       usage binary-long value h'004000'.
+003770    05 AG-TEXTBOX-DEFAULT       usage binary-long value h'000000'.
 003780    
 003790 01 treetbl-flags.
 003800    05 AG-TREETBL-MULTI         usage binary-long value h'001'.
@@ -453,6 +463,7 @@
 004510      when "set-info"     perform set-info    thru ex-set-info
 004520      when "set-caption"  perform set-caption thru ex-set-caption
 004530      when "get-caption"  perform get-caption thru ex-get-caption
+004530      when "get-root"     perform get-root    thru ex-get-root
 004540      when "set-width"    perform set-width   thru ex-set-width
 004550      when "set-height"   perform set-height  thru ex-set-height
 004560      when "get-width"    perform get-width   thru ex-get-width
@@ -504,7 +515,9 @@
 005020      when "addfixed"     perform addfixed    thru ex-addfixed
 005030      when "addcombo"     perform addcombo    thru ex-addcombo
 005040      when "addradio"     perform addradio    thru ex-addradio
-005050
+004810      when "addmenu"      perform addmenu     thru ex-addmenu
+004810      when "addnode"      perform addnode     thru ex-addnode
+004810      when "addlink"      perform addlink     thru ex-addlink
 005060      when "move"         perform moveto      thru ex-moveto
 005070      when "size"         perform sizeto      thru ex-sizeto
 005080      when "set-size"     perform sizeto      thru ex-sizeto
@@ -539,6 +552,8 @@
 005340      when "find"         perform find        thru ex-find
 005350
 005360      when "refresh"      perform refresh     thru ex-refresh
+005360      when "disable"      perform disableit   thru ex-disableit
+005360      when "enable"       perform enableit    thru ex-enableit
 005370
 005380      when other
 005390       display "agarcob - command: '" 
@@ -727,6 +742,59 @@
 007220
 007230 ex-refresh.
 007240      exit.
+
+007000 enableit.
+007010     
+007020      if agar-debug = "enable"
+007030       move "internal get-class"   to agar-function
+007040        perform agar-do-debug      thru ex-agar-do-debug.
+007050
+007060     
+007070      perform get-class thru ex-get-class.
+007080
+007090      evaluate agar-class
+007100         when "menu"
+007110         CALL static  "AG_MenuState" 
+007120          using by value agar-object
+                 by value 1
+007140         
+007150         when other 
+007160
+            call static "AG_WidgetEnable"
+007180          using by value agar-object
+
+007200      end-evaluate.             
+007210      
+007220
+007230 ex-enableit.
+007240      exit.
+
+007000 disableit.
+007010     
+007020      if agar-debug = "enable"
+007030       move "internal get-class"   to agar-function
+007040        perform agar-do-debug      thru ex-agar-do-debug.
+007050
+007060     
+007070      perform get-class thru ex-get-class.
+007080
+007090      evaluate agar-class
+007100         when "menu"
+007110         CALL static  "AG_MenuState" 
+007120          using by value agar-object
+                  by value 0
+007140         
+007150         when other 
+007160
+            call static "AG_WidgetDisable"
+007180          using by value agar-object
+
+007200      end-evaluate.             
+007210      
+007220
+007230 ex-disableit.
+007240      exit.
+
 007250      
 007260 set-value.
 007270
@@ -1020,6 +1088,78 @@
 010150      
 010160 ex-addpane.
 010170      exit.
+
+
+009890 addmenu.
+009900
+009910      PERFORM asciiZ thru ex-asciiz.
+009920           
+             call static "AG_MenuNew" using by value agar-object
+                 by value 1
+008960          returning agar-widget.
+010050
+010060         set address of menu-instance    to agar-widget.
+010070         
+010120         move menu-root                  to agar-root.
+010150      
+010160 ex-addmenu.
+010170      exit.
+010180
+
+       get-root.
+       
+               set address of menu-instance    to agar-object.
+010070         
+010120         move menu-root                  to agar-root.
+010150 
+       
+       ex-get-root.
+            exit.
+            
+009890 addnode.
+009900
+009910      PERFORM asciiZ thru ex-asciiz.
+
+009920           
+             call static "AG_MenuNode" using by value agar-object
+                 by reference agar-text 
+                 by value agar-null
+008960          returning agar-widget.
+
+010150      
+010160 ex-addnode.
+010170      exit.
+
+009890 addlink.
+
+           
+009900
+009910      PERFORM asciiZ thru ex-asciiz.
+
+
+             move agar-text                 to local-buffer
+006530       move agar-event                to agar-text.
+006540       perform asciiz                 thru ex-asciiZ
+006550       move agar-text                 to agar-event.
+
+             move local-buffer              to agar-text.
+
+            
+009920           
+             call static "AG_MenuAction" using by value agar-object
+                 by reference agar-text 
+      * by value agar-null
+      * by reference agar-event
+      * by reference local-buffer
+008960          returning agar-widget.
+
+010150       display "ho genearto " agar-widget.
+
+010160 ex-addlink.
+010170      exit.
+
+
+010190
 010180
 010190
 010200*
@@ -1203,6 +1343,11 @@
 011900            by content  agar-text  
 011910               returning omitted
 011920          end-call
+
+
+                 when "menu"
+                 
+                 display "todo menu item"
 011930     
 011940            when other display 
 011950             " additem not yet implemented for "
@@ -2022,6 +2167,7 @@
 019870             when "SLI"      MOVE "slider"       to agar-class
 019880             when "SCR"      MOVE "scroll"       to agar-class
 019890             when "FIX"      MOVE "fixed"        to agar-class
+019890             when "MEN"      MOVE "menu"         to agar-class
 019900             when other 
 019910               move 
 019920                agar-string(4:3)         to agar-class
