@@ -522,7 +522,7 @@
 *
 * usage:   move  "root"  of object to agar-object
 *
-#get-parent min=6 max=6
+#get-root min=6 max=6
 
                 call STATIC "ag_object_root"
                   using by value 
@@ -2052,14 +2052,14 @@
             $DOT
 
 *
-* usage:   MOVE "root"" of menu TO VARIABLE
+* usage:   MOVE "node"" of menu TO VARIABLE
 *                                        6       7
-#get-root
+#get-node
 
             move 
                $PARAM(4)
                                        to agar-object
-            move "get-root"            to agar-function
+            move "get-node"            to agar-function
 
             call agar-cobol
 

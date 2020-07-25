@@ -463,7 +463,7 @@
 004510      when "set-info"     perform set-info    thru ex-set-info
 004520      when "set-caption"  perform set-caption thru ex-set-caption
 004530      when "get-caption"  perform get-caption thru ex-get-caption
-004530      when "get-root"     perform get-root    thru ex-get-root
+004530      when "get-node"     perform get-node    thru ex-get-node
 004540      when "set-width"    perform set-width   thru ex-set-width
 004550      when "set-height"   perform set-height  thru ex-set-height
 004560      when "get-width"    perform get-width   thru ex-get-width
@@ -1115,14 +1115,14 @@
 010170      exit.
 010180
 
-       get-root.
+       get-node.
        
                set address of menu-instance    to agar-object.
 010070         
 010120         move menu-root                  to agar-root.
 010150 
        
-       ex-get-root.
+       ex-get-node.
             exit.
             
 009890 addnode.
