@@ -2069,6 +2069,34 @@
 
             $DOT
 
+* usage:   INVOKE menuobject "menuseparator"
+*
+
+
+#menuseparator    max=3
+
+            call  "AG_MenuSeparator"
+                using by value
+                 $PARAM(2)
+            end-call
+
+            $DOT
+
+* usage:   INVOKE menuobject "menusection" usign "this is a section"
+
+#menusection   max=5
+
+            call  "AG_MenuSection"
+                using by value
+                 $PARAM(2)
+                    by reference
+                     $PARAM(5)
+            end-call
+
+            $DOT
+
+             
+            $DOT
 
 
 

@@ -912,9 +912,18 @@
 008390            by reference agar-text
 008400
 008410         when "button"
+
 008420            call static "AG_ButtonText" using by value
 008430             agar-object 
 008440            by reference agar-text
+
+008410         when "menu"
+                 
+
+                call  "AG_MenuSetLabel" 
+                   using by value  agar-object 
+008440                by reference agar-text
+
 008450
 008460         WHEN other
 008470          
