@@ -1200,6 +1200,29 @@
 
             $DOT
 
+*
+* usage:   INVOKE menu "addmenueitem" using agar-text returning anode
+*
+
+#addmenuitem max=7
+
+            move 
+                                       $PARAM(5)
+                                       to agar-text
+            move 
+                                       $PARAM(2)
+                                       to agar-object
+
+            move "addmenuitem"          to agar-function
+            
+            move                       agar-widget to
+                                       $PARAM(7)
+
+          
+            call agar-cobol
+
+            $DOT
+
 
 *
 * usage:   INVOKE menu "addlink" using agar-text  icona procedure data returning anode
@@ -2094,6 +2117,21 @@
             end-call
 
             $DOT
+
+             
+            $DOT
+
+
+* usage:   INVOKE menuobject "remove" using this-node
+
+
+#remove    max=3
+
+            move
+                 $PARAM(2)
+                                       to agar-object
+            move "remove"              to agar-function
+            call agar-cobol
 
              
             $DOT

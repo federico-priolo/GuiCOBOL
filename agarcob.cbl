@@ -517,7 +517,9 @@
 005040      when "addradio"     perform addradio    thru ex-addradio
 004810      when "addmenu"      perform addmenu     thru ex-addmenu
 004810      when "addnode"      perform addnode     thru ex-addnode
+004810      when "addmenuitem"  perform addmenuitem thru ex-addmenuitem
 004810      when "addlink"      perform addlink     thru ex-addlink
+005060      when "remove"       perform remove      thru ex-remove
 005060      when "move"         perform moveto      thru ex-moveto
 005070      when "size"         perform sizeto      thru ex-sizeto
 005080      when "set-size"     perform sizeto      thru ex-sizeto
@@ -1113,7 +1115,8 @@
 010150      
 010160 ex-addmenu.
 010170      exit.
-010180
+
+
 
        get-node.
        
@@ -1137,6 +1140,24 @@
 
 010150      
 010160 ex-addnode.
+010170      exit.
+
+            
+009890 addmenuitem.
+009900
+009910      PERFORM asciiZ thru ex-asciiz.
+
+009920           
+             call static "AG_MenuDynamicItem" 
+                using by value agar-object
+                 by reference agar-text 
+                 by value agar-null
+                 by value agar-null
+                 by value agar-null
+008960          returning agar-widget.
+
+010150      
+010160 ex-addmenuitem.
 010170      exit.
 
 009890 addlink.
@@ -1166,6 +1187,40 @@
 
 010160 ex-addlink.
 010170      exit.
+
+
+007970 remove.
+007980
+008000
+008010      if agar-debug = "enable"
+008020       move "internal get-class"   to agar-function
+008030        perform agar-do-debug      thru ex-agar-do-debug.
+008040     
+008060
+008070      perform get-class thru ex-get-class.
+008080
+008090      if agar-debug = "enable"
+008100       perform agar-after-debug    thru ex-agar-after-debug.
+008110
+008130 
+008140      evaluate agar-class
+008150         when "form"
+008410         when "menu"
+
+                call  "AG_MenuDeL" 
+                   using by value  agar-object 
+                   
+008450
+008460         WHEN other
+008470          
+008480          DISPLAY "remove is not defined for"
+008490                function trim(agar-class) upon syserr
+008500
+008510      end-evaluate.
+008520
+008620
+008630 ex-remove.
+008640      exit.
 
 
 010190
