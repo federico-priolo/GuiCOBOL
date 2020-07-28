@@ -1105,9 +1105,6 @@
             $DOT
  
 *
-* usage:   INVOKE parent "addradioto" using "procedura"  RETURNING object
-*
-
 * move "horizontal" to  "disposition" of radio
 * move "vertical" to  "disposition" of radio
 * move "h" to  "disposition" of radio
@@ -1123,6 +1120,7 @@
                                        to agar-object
             move "set-disposition"     to agar-function
             call agar-cobol
+
             
             $DOT
 
@@ -1143,9 +1141,6 @@
             
             set agar-callback          to entry
                                           $PARAM(5)
-            move 
-                 $PARAM(7)
-                                       to agar-object
             move
                  $PARAM(5)
                                        TO agar-procedure
@@ -1153,7 +1148,7 @@
             move "setevent"            to agar-function
 
             call agar-cobol
-
+           
             $DOT
 
 
@@ -1191,12 +1186,13 @@
                                        to agar-object
 
             move "addnode"             to agar-function
+
+            call agar-cobol
             
             move                       agar-widget to
                                        $PARAM(7)
 
           
-            call agar-cobol
 
             $DOT
 
@@ -1214,20 +1210,21 @@
                                        to agar-object
 
             move "addmenuitem"          to agar-function
+
+            call agar-cobol
             
             move                       agar-widget to
                                        $PARAM(7)
 
           
-            call agar-cobol
 
             $DOT
 
 
 *
-* usage:   INVOKE menu "addlink" using agar-text  icona procedure data returning anode
+* usage:   INVOKE menu "addlink" using agar-text  procedure  returning anode
 *
-#addlink max=10
+#addlink max=08
 
             move 
                                        $PARAM(5)
@@ -1235,24 +1232,20 @@
             move 
                                        $PARAM(2)
                                        to agar-object
-
             move "addlink"             to agar-function
             
-            move                       
-                                       $PARAM(7)
-            to                         agar-event
+            move 
+                 $PARAM(6)
+                                       to  agar-event
           
-            move                       
-                                       $PARAM(8)
-            to                         agar-value
-          
-            call agar-cobol
-            move                       agar-widget to
-                                       $PARAM(10)
             
-
+            call agar-cobol
+            
+            move agar-widget           to 
+                 $PARAM(8)
+            
+            
             $DOT
-
 
 
 *

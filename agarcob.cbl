@@ -1135,7 +1135,7 @@
 009920           
              call static "AG_MenuNode" using by value agar-object
                  by reference agar-text 
-                 by value agar-null
+                 by value agar-null-pointer
 008960          returning agar-widget.
 
 010150      
@@ -1151,9 +1151,9 @@
              call static "AG_MenuDynamicItem" 
                 using by value agar-object
                  by reference agar-text 
-                 by value agar-null
-                 by value agar-null
-                 by value agar-null
+                 by value agar-null-pointer
+                 by value agar-null-pointer
+                 by value agar-null-pointer
 008960          returning agar-widget.
 
 010150      
@@ -1161,7 +1161,6 @@
 010170      exit.
 
 009890 addlink.
-
            
 009900
 009910      PERFORM asciiZ thru ex-asciiz.
@@ -1176,14 +1175,14 @@
 
             
 009920           
-             call static "AG_MenuAction" using by value agar-object
+             call  "AG_MenuAction" using by value agar-object
                  by reference agar-text 
-      * by value agar-null
-      * by reference agar-event
-      * by reference local-buffer
-008960          returning agar-widget.
+                 by value agar-null-pointer
+                     by reference agar-event
+                        by value agar-null-pointer
+                         returning agar-object.
 
-010150       display "ho genearto " agar-widget.
+010150       display "ho fatto " agar-object.
 
 010160 ex-addlink.
 010170      exit.
@@ -1383,7 +1382,7 @@
 011660         call "AG_RadioAddItemS" using
 011670          by value agar-widget
 011680            by content  agar-text  
-011690               returning omitted
+
 011700          end-call
 011710          
 011720          when "combo"
@@ -1405,7 +1404,7 @@
 011880          by value combo-tlist
 011890           by value agar-null-pointer
 011900            by content  agar-text  
-011910               returning omitted
+
 011920          end-call
 
 
