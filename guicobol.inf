@@ -1141,6 +1141,11 @@
             
             set agar-callback          to entry
                                           $PARAM(5)
+                                          
+            move 
+                 $PARAM(7)
+                                       to agar-object                                          
+                                          
             move
                  $PARAM(5)
                                        TO agar-procedure
