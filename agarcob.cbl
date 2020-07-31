@@ -1163,26 +1163,19 @@
 009890 addlink.
            
 009900
-009910      PERFORM asciiZ thru ex-asciiz.
-
-
-             move agar-text                 to local-buffer
-006530       move agar-event                to agar-text.
-006540       perform asciiz                 thru ex-asciiZ
-006550       move agar-text                 to agar-event.
-
-             move local-buffer              to agar-text.
-
-            
+009910       PERFORM asciiZ                 thru ex-asciiz.
+             
+             display "agar-handler" agar-handler
 009920           
-             call  "AG_MenuAction" using by value agar-object
-                 by reference agar-text 
-                 by value agar-null-pointer
-                     by reference agar-event
-                        by value agar-null-pointer
-                         returning agar-object.
-
-010150       display "ho fatto " agar-object.
+            call "AG_MenuAction" using
+               by value agar-object
+               by reference function concatenate(agar-text low-value)
+               by value agar-null-pointer
+               by value agar-handler
+               by reference "%p(menu)"
+               by value agar-null-pointer
+               returning agar-widget.                         
+                         
 
 010160 ex-addlink.
 010170      exit.

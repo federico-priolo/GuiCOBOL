@@ -8,6 +8,7 @@
         01 agar-form          usage pointer       external.
         01 agar-widget        usage pointer       external.
         01 agar-dummy         usage pointer       external.
+        01 agar-data          usage pointer       external.
         01 agar-panel         usage pointer       external.
         01 agar-parent        usage pointer       external.
         01 agar-frame         usage pointer       external.
@@ -56,7 +57,7 @@
         01 agar-callback  usage procedure-pointer external.
         01 agar-procedure     pic x(32)            external.
         01 agar-local-debug   pic x                external.
-                
+        01 agar-handler       usage program-pointer external.                
         01 rc usage binary-long external.
 
         01 params            usage pointer.

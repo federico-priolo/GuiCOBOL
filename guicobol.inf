@@ -1234,15 +1234,16 @@
             move 
                                        $PARAM(5)
                                        to agar-text
+                                       
             move 
                                        $PARAM(2)
                                        to agar-object
+                                       
             move "addlink"             to agar-function
-            
-            move 
-                 $PARAM(6)
-                                       to  agar-event
-          
+                                       
+            set agar-handler           to entry
+                                          $PARAM(6)
+
             
             call agar-cobol
             
