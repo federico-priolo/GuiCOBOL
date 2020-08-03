@@ -576,7 +576,7 @@
 005540      if agar-started not = agar-true
 005550
 005560      call static "AG_InitCore" using null by value 0 returning rc
-005570    *>    on exception display "error: no libagar " upon syserr
+00557 *    on exception display "error: no libagar " upon syserr
 005580      end-call
 005590
 005600      if rc = -1 then
@@ -1147,39 +1147,43 @@
 009900
 009910      PERFORM asciiZ thru ex-asciiz.
 
-009920           
              call static "AG_MenuDynamicItem" 
                 using by value agar-object
                  by reference agar-text 
                  by value agar-null-pointer
                  by value agar-null-pointer
                  by value agar-null-pointer
-008960          returning agar-widget.
+008960           returning agar-widget.
 
-010150      
 010160 ex-addmenuitem.
 010170      exit.
 
 009890 addlink.
-           
 009900
 009910       PERFORM asciiZ                 thru ex-asciiz.
              
-             display "agar-handler" agar-handler
+             display "agar:" function trim(agar-procedure)
+                             " " agar-callback
 009920           
-            call "AG_MenuAction" using
+006570       if agar-callback equal null then
+006580        display "windown entry not found:"
+006590        function trim(agar-procedure)
+006600        else
+              call static "AG_MenuAction" using
                by value agar-object
                by reference function concatenate(agar-text low-value)
                by value agar-null-pointer
-               by value agar-handler
-               by reference "%p(menu)"
-               by value agar-null-pointer
+               by value agar-callback
+                by reference "%p(menu)"
+                by value agar-null-pointer
+
                returning agar-widget.                         
-                         
+               
+               
+               
 
 010160 ex-addlink.
 010170      exit.
-
 
 007970 remove.
 007980

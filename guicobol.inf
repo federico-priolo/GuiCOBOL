@@ -1,4 +1,5 @@
 *
+*
 ** GuiCobol 1.3 builder for Opencobol 1.1 gui definition files last 10.05.2020 (pre-release no history is left)
 *
 *
@@ -1241,10 +1242,13 @@
                                        
             move "addlink"             to agar-function
                                        
-            set agar-handler           to entry
+            
+            set agar-callback          to entry
                                           $PARAM(6)
 
-            
+            move
+                                      $PARAM(6)
+                                       to agar-procedure
             call agar-cobol
             
             move agar-widget           to 
