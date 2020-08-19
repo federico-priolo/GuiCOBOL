@@ -4,7 +4,7 @@
 000040*
 000050* agar connector for GNUCOBOL
 000060*
-000070* FIRST 1th AUGUST   0.1.0  LAST 19.07.2020
+000070* FIRST 1th AUGUST   0.1.0  LAST 17.08.2020
 000080*
 000090* Copyright (C) 2012-2020 Federico Priolo TP ONE SRL
 000100*
@@ -456,6 +456,7 @@
 004440      evaluate function lower-case(agar-function)
 004450
 004460      when "addform"      perform addform     thru ex-addform
+004460      when "addchild"     perform addchild    thru ex-addchild
 004470      when "show"         perform set-visible thru ex-set-visible
 004480
 004490      when "set-error"    perform set-error   thru ex-set-error
@@ -614,6 +615,20 @@
 005920
 005930 ex-addform.
 005940      exit.
+
+005790 addchild.
+
+            perform addform thru ex-addform.
+
+005810      call "AG_WindowAttach" 
+                 using 
+                 by value  agar-main 
+                 by value  agar-object.
+005920
+005930 ex-addchild.
+005940      exit.
+
+
 005950
 005960 get-focused.
 005970     

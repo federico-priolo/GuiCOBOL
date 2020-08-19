@@ -19,6 +19,20 @@
             $DOT
 
 *
+* usage:   INVOKE SUPER "addchild" RETURNING object
+*
+
+#addchild max=5
+
+            move "addchild"             to agar-function
+            call agar-cobol
+
+            move  agar-object          to
+                                       $PARAM(5)
+            $DOT
+
+
+*
 * usage:   INVOKE object "addscrollview" RETURNING object
 *
 
