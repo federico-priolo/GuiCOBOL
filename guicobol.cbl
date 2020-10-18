@@ -1,1501 +1,1521 @@
-        IDENTIFICATION DIVISION.
-        PROGRAM-ID.    guicobol.
-      *---------------------------------------------------------------------
-      *
-      * Gui builder for OPENCOBOL
-      * pre-release agar    26 february  2020  0.1.2.24  line of error.  *
-      * pre-release agar    26 february  2020  0.1.2.23  fixedcolor      *
-      * pre-release agar    22 february  2020  0.1.2.23      
-      * pre-release agar     1 August    2019  0.1.2.18      
-      * FIRST                1 SEPTEMBER 2011  0.1.0
-      *
-      * Copyright (C) 2010-2019 Federico Priolo 
-      *
-      * This program is free software; you can redistribute it and/or modify
-      * it under the terms of the GNU General Public License as published by
-      * the Free Software Foundation; either version 2, or (at your option)
-      * any later version.
-      *
-      * This program is distributed in the hope that it will be useful,
-      * but WITHOUT ANY WARRANTY; without even the implied warranty of
-      * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-      * GNU General Public License for more details.
-      *
-      * You should have received a copy of the GNU General Public License
-      * along with this software; see the file COPYING.  If not, write to
-      * the Free Software Foundation, 51 Franklin Street, Fifth Floor
-      * Boston, MA 02110-1301 USA
-      *
-      *
-      *---------------------------------------------------------------------
-        ENVIRONMENT DIVISION.
-        CONFIGURATION SECTION.
-        SOURCE-COMPUTER.        PC-IBM.
-        OBJECT-COMPUTER.        PC-IBM.
-        SPECIAL-NAMES.
-
-           DECIMAL-POINT IS COMMA.
-
-        INPUT-OUTPUT SECTION.
-        FILE-CONTROL.
-
-                SELECT ARK-IN ASSIGN TO  FILE-IN
-                 ORGANIZATION IS LINE SEQUENTIAL
-                 FILE STATUS  IS STATUS-IN.
-
-                SELECT ARK-DO ASSIGN TO  FILE-DO
-                 ORGANIZATION IS LINE SEQUENTIAL
-                 FILE STATUS  IS STATUS-DO.
-
-                
-                SELECT ARK-OUT ASSIGN TO FILE-OUT
-                 ORGANIZATION IS LINE SEQUENTIAL
-                 FILE STATUS  IS STATUS-OUT.
-
-                SELECT ARK-WORK ASSIGN TO FILE-WORK
-                 ORGANIZATION IS LINE SEQUENTIAL
-                 FILE STATUS  IS STATUS-WORK.
-
-
-        DATA DIVISION.
-        FILE SECTION.
-
-        FD ARK-WORK.
-        01 REC-WORK.
-           02 DATI-WORK               PIC X(80).
-
-
-        FD ARK-IN.
-        01 REC-IN.
-           02 DATI-IN                 PIC X(256).
-
-        FD ARK-DO.
-        01 REC-DO.
-           02 DATI-DO                 PIC X(500).
-
-
-        
-
-        FD ARK-OUT.
-        01 REC-OUT.
-           02 DATI-OUT                PIC X(256).
-
-        WORKING-STORAGE SECTION.
-        01 COLOR-REQUIRED             PIC X(50) VALUE SPACE.
-        01 TAB-FUNZIONE.
-           12 MIN-FUNZIONE            PIC 99.
-           12 MAX-FUNZIONE            PIC 99.
-           12 DUMMY                   PIC X.
-
-        01 PARAMETRI.
-
-         07 IDENTIFICATION-DIVISION   pic is  X(30).
-         07 COUNT-LINE                PIC 9(9)   VALUE ZERO.
-         07 EXIT-WITH-ERRORS          PIC X      VALUE SPACE.
-         07 TAB-PARAMETRI.
-           12 METTI-DOT               PIC X      VALUE SPACE.
-           12 CONTA-PARAM             PIC 99     VALUE ZEROS.
-           12 PARAMETRO               PIC X(128) OCCURS 50 TIMES.
-           12 USAGE-PARAM             PIC X(30)  OCCURS 50 TIMES.
-         07 REMEMBER-METTI-DOT        PIC X      VALUE SPACE.
-         07 PARAMETRO1                PIC X(128) VALUE SPACE.
-         07 PARAMETRO2                PIC X(128) VALUE SPACE.
-         07 PARAMETRO3                PIC X(128) VALUE SPACE.
-         07 PARAMETRO4                PIC X(128) VALUE SPACE.
-         07 CONTA-LINE                PIC 9(6)   VALUE ZEROS.
-         07 DONE-SOMETHING            PIC X      VALUE SPACE.
-         07 TIME-SYS                  PIC 9(6)   VALUE ZEROS.
-         07 FILE-SYS                  PIC X(6)   VALUE SPACE.
-         07 ISTRUZIONE                PIC X(40)  VALUE SPACE.
-         07 VALORE                    PIC X(512) VALUE SPACE.
-         07 FINE-FILE                 PIC X      VALUE SPACE.
-         07 FILE-IN                   PIC X(200) VALUE SPACE.
-         07 FILE-OUT                  PIC X(200) VALUE SPACE.
-         07 FILE-WORK                 PIC X(200) VALUE SPACE.
-         07 FILE-DO                   PIC X(200) VALUE SPACE.
-         07 FILE-COLOR                PIC X(200) VALUE SPACE.
-         07 STATUS-IN                 PIC XX     VALUE SPACE.
-         07 STATUS-OUT                PIC XX     VALUE SPACE.
-         07 STATUS-DO                 PIC XX     VALUE SPACE.
-         07 STATUS-COLOR              PIC XX     VALUE SPACE.
-         07 STATUS-WORK               PIC XX     VALUE SPACE.
-         07 IND                       PIC 9(9)   VALUE ZEROS.
-         07 IND1                      PIC 9(9)   VALUE ZEROS.
-         07 IND2                      PIC 9(9)   VALUE ZEROS.
-         07 END-COBOL                 PIC 9(3)   VALUE ZEROS.
-         07 START-COBOL               PIC 9(3)   VALUE ZEROS.
-         07 STRINGA                   PIC X(256) VALUE SPACE.
-         07 STRINGA1                  PIC X(256) VALUE SPACE.
-         07 COMPARA                   PIC X(10)  VALUE SPACE.
-         07 LCOMPARA                  PIC 99     VALUE ZEROS.
-         07 STRINGA2                  PIC X(256) VALUE SPACE.
-         07 LSTRINGA2                 PIC 99     VALUE ZEROS.
-         07 CHIUSO                    PIC XX     VALUE SPACE.
-         07 COMANDO                   PIC X(1024) VALUE SPACES.
-         07 COPY1                     PIC X(100) VALUE SPACE.
-         07 COPY2                     PIC X(100) VALUE SPACE.
-         07 DO-DLL                    PIC XX     VALUE SPACE.
-         07 TAB-OPTIONS.
-          09 SW-OPTION                PIC X OCCURS 20 TIMES.
-         78 MAXOPZ                    VALUE 20.
-         07 SW-NOCOMPILA              PIC X.
-         07 SW-SAVE                   PIC X.
-         07 SW-DATI                   PIC X.
-         07 SW-DATI-OK                PIC X.
-         07 SW-HELP                   PIC X.
-         07 SW-MANUAL                 PIC X.
-         07 SW-CODICE                 PIC X.
-         07 SW-FREE                   PIC X.
-         07 SW-CONST                  PIC X.
-         07 SW-STOP                   PIC X.
-         07 SW-EXE                    PIC X.
-         07 SW-ANALYSIS               PIC X.
-         07 SW-VERBOSE                PIC X.
-         07 XX                        PIC XX.
-         07 REM-COLUMN                PIC 9.
-         07 CAMPO1                    PIC X(30).
-         07 CAMPO2.
-           09 LIVELLO                 PIC 99.
-             88 LIVELLO-OK            VALUE 01 THRU 77
-                                            79 THRU 87.
-
-         07 CAMPO3                    PIC X(30).
-         07 CAMPO4                    PIC X(30).
-         07 CAMPO5                    PIC X(30).
-         07 RIC-LIVELLO               PIC 99.
-         07 INSIDE-OCCURS             PIC XX.
-         07 EOF-DO                    PIC X.
-         07 EOF-COLOR                 PIC X.
-         07 AREA-DATI                 PIC X.
-         07 TYPE-SYSTEM               PIC X(10).
-         07 CONTA-STACK               PIC 9(9).
-         07 CONTA-RECORD              PIC 9(9).
-         07 MIN-RECORD                PIC 9(9).
-         07 MAX-RECORD                PIC 9(9).
-         07 START-RECORD              PIC 9(9).
-         07 POINT-RECORD              PIC 9(9).
-         07 ESCI                      PIC XX     VALUE SPACE.
-         07 PARENT                    PIC X(30)  VALUE SPACE.
-         07 GLOBAL-LEVEL              PIC 99     VALUE ZEROS.
-         07 LAST-LABEL                PIC X(30)  VALUE SPACE.
-         07 THIS-LABEL                PIC X(30)  VALUE SPACE.
-         07 CONTA-WORKING-STORAGE     PIC 99     VALUE ZERO.
-
-
-
-        PROCEDURE DIVISION.
-        INIZIO SECTION.
-
-                PERFORM INIZIALI      THRU EX-INIZIALI.
-
-                PERFORM LOGO          THRU EX-LOGO.
-
-                ACCEPT FILE-IN FROM COMMAND-LINE.
-
-                IF FILE-IN  = SPACES
-                 PERFORM HELP THRU EX-HELP
-                  STOP RUN
-                END-IF.
-
-                PERFORM OPZIONI  THRU EX-OPZIONI.
-
-                PERFORM APERTURE THRU EX-APERTURE.
-
-                PERFORM ELABORA  THRU EX-ELABORA UNTIL FINE-FILE = "S".
-
-                PERFORM CHIUSURE THRU EX-CHIUSURE.
-
-                GOBACK.
-
-        LETTURA.
-
-                IF FINE-FILE = "S" GO TO EX-LETTURA.
-
-                MOVE SPACES            TO REC-IN REC-OUT.
-
-                IF FINE-FILE NOT = "S"
-                 READ ARK-IN NEXT AT END
-                  MOVE "S" TO FINE-FILE
-                 END-IF.
-
-                IF FINE-FILE = "S" GO TO EX-LETTURA.
-
-                ADD 1 TO COUNT-LINE.
-
-
-                MOVE ZEROS TO          IND.
-                INSPECT FUNCTION UPPER-CASE(REC-IN)
-                 TALLYING IND FOR ALL ">>SOURCE FORMAT IS FREE"
-      *
-      *    before to set true the FREE FORMAT switch
-      *    we must decide if it is not another ... for example
-      *    if you want to debug the animator with animator itself..
-      *    it could find the sentence but with other meaning...
-      *
-                  IF IND = 1
-                  MOVE FUNCTION UPPER-CASE(REC-IN) TO STRINGA
-                  MOVE SPACES         TO COMANDO
-                  UNSTRING STRINGA
-                   DELIMITED BY ">>SOURCE FORMAT IS FREE"
-                    INTO COMANDO ISTRUZIONE
-                   END-UNSTRING
-                   IF ISTRUZIONE = SPACES
-                   MOVE "S"             TO SW-FREE
-                   MOVE 1               TO REM-COLUMN
-                   MOVE REC-IN          TO REC-OUT
-                   WRITE REC-OUT
-                   GO TO LETTURA.
-
-                 IF REC-IN(7:1) = "*" GO TO LETTURA.
-
-      *
-      ** manage the free format option
-      *
-
-                IF SW-FREE =  "S"
-                AND REC-IN > SPACES
-                 PERFORM VARYING IND FROM 1 BY 1 UNTIL IND > 100
-                  OR REC-IN(IND:1) NOT = SPACES
-                  CONTINUE
-                  END-PERFORM
-
-                  MOVE SPACES          TO STRINGA
-
-                   IF REC-IN(IND:1) = "*"
-
-                    MOVE 7              TO IND1
-
-                    IF REC-IN((IND + 1):1) = SPACES
-                    MOVE ">" TO REC-IN((IND + 1) :1)
-                    END-IF
-
-                   ELSE
-
-                    MOVE 8              TO IND1
-
-                   END-IF
-
-                   MOVE REC-IN(IND: )   TO STRINGA(IND1:)
-                   MOVE STRINGA         TO REC-IN
-
-                END-IF.
-
-                IF REC-IN = SPACES GO TO LETTURA.
-
-                if REC-IN(1:6) NUMERIC 
-                 MOVE 7        TO IND
-                 ELSE
-                 MOVE 1        TO IND.
-
-                 PERFORM VARYING IND FROM IND BY  1 UNTIL IND > 100
-                 OR REC-IN(IND:1) > SPACES
-                  CONTINUE
-                 END-PERFORM.
-      *
-      ****  a line with only a character is skiped (.) or other...
-      *
-                 IF REC-IN(IND + 1:) =  " " GO TO LETTURA.
-
-                 MOVE REC-IN(IND:)    TO STRINGA.
-
-
-
-        EX-LETTURA.
-                EXIT.
-
-        ELABORA SECTION.
-
-                IF FINE-FILE NOT = "S"
-                  PERFORM LETTURA      THRU EX-LETTURA
-                  PERFORM TRATTA       THRU EX-TRATTA.
-
-        EX-ELABORA.
-                EXIT.
-
-        UNSTRINGA-AGAIN.
-
-               IF SW-VERBOSE = "S"
-                display " loop again for " conta-param " OF  "
-                min-funzione
-                " " FUNCTION TRIM(STRINGA).
-
-                PERFORM LETTURA        THRU EX-LETTURA.
-
-                IF FINE-FILE = "S" GO TO EX-UNSTRINGA-AGAIN.
-
-                PERFORM UNSTRINGA      THRU EX-UNSTRINGA.
-
-        EX-UNSTRINGA-AGAIN.
-                EXIT.
-
-        UNSTRINGA.
-
-                MOVE 1 TO IND.
-
-        CICLO-UNSTRINGA.
-
-                PERFORM VARYING IND FROM IND BY 1 UNTIL IND >  100
-                OR STRINGA(IND:1) > SPACES
-                CONTINUE
-                END-PERFORM.
-
-                IF IND > 100 GO TO FINE-UNSTRINGA.
-
-
-                MOVE STRINGA           TO STRINGA1
-
-                IF STRINGA(IND:1) = '"'
-                 MOVE IND              TO IND2
-                 ADD 1                 TO IND2
-                 PERFORM VARYING IND2 FROM IND2 BY 1 UNTIL IND2 > 100
-                  OR  STRINGA(IND2:1) = '"'
-                   IF STRINGA1(IND2:1) = SPACE
-                   MOVE "!"  TO STRINGA1(IND2:1)
-                   END-IF
-                 END-PERFORM
-                END-IF.
-
-                MOVE 1 TO IND1.
-                ADD 1  TO CONTA-PARAM.
-
-                PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
-                 OR STRINGA1(IND:1) = SPACES
-
-                 IF IND1 NOT > LENGTH OF PARAMETRO(CONTA-PARAM)
-                 MOVE STRINGA(IND:1)  TO PARAMETRO(CONTA-PARAM)(IND1:1)
-                 ADD  1               TO IND1
-                 END-IF
-
-                END-PERFORM.
-
-                IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "SELF"
-                 MOVE "agar-Form"       TO PARAMETRO(CONTA-PARAM).
-
-                IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "SELF."
-                 MOVE "agar-Form."      TO PARAMETRO(CONTA-PARAM).
-
-                IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "TRUE "
-                 MOVE "1"               TO PARAMETRO(CONTA-PARAM).
-
-               IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "FALSE "
-                 MOVE "0"               TO PARAMETRO(CONTA-PARAM).
-
- 
-                GO TO CICLO-UNSTRINGA.
-
-        FINE-UNSTRINGA.
-
-                 MOVE "N"              TO METTI-DOT.
-
-                 IF PARAMETRO(CONTA-PARAM) = "."
-                  MOVE "S"             TO METTI-DOT.
-
-                 PERFORM VARYING IND FROM
-                   LENGTH OF PARAMETRO(CONTA-PARAM)
-                    BY -1 UNTIL IND = ZEROS
-                 OR PARAMETRO(CONTA-PARAM) (IND:1) > SPACES
-                 CONTINUE
-                 END-PERFORM
-                 IF IND > ZEROS
-                  AND PARAMETRO(CONTA-PARAM) (IND:1) = "."
-                  MOVE SPACES     TO PARAMETRO(CONTA-PARAM)(IND:1)
-                  MOVE "S"        TO METTI-DOT.
-
-        EX-UNSTRINGA.
-                EXIT.
-
-        TRATTA.
-
-                 MOVE SPACES           TO TAB-PARAMETRI.
-
-                 MOVE ZEROS            TO IND1.
-                 MOVE ZEROS            TO CONTA-PARAM.
-
-                 PERFORM UNSTRINGA     THRU EX-UNSTRINGA.
-
-
-                 EVALUATE FUNCTION UPPER-CASE(PARAMETRO(1))
-
-      *
-      *   CASE A:   IF "title" of gtk-form .......
-      *
-
-                  WHEN "IF"
-
-                   PERFORM ADDED-LINES     THRU EX-ADDED-LINES
-
-                   MOVE ZEROS                    TO IND1
-
-                   INSPECT PARAMETRO(2) TALLYING IND1 FOR ALL '"'
-
-                   IF IND1 = 2
-                   AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "OF"
-                   PERFORM DO-IF     THRU EX-DO-IF
-                   GO TO EX-TRATTA
-
-
-                  WHEN "INVOKE"
-
-                   PERFORM ADDED-LINES     THRU EX-ADDED-LINES
-                   
-                   PERFORM DO-INVOKE THRU EX-DO-INVOKE
-                   GO TO EX-TRATTA
-
-                  WHEN "MOVE"
-
-                   PERFORM ADDED-LINES     THRU EX-ADDED-LINES
-      *
-      *   CASE A:   move "name of the window" to "title" of gtk-form.
-      *
-                   MOVE ZEROS TO IND1
-                   INSPECT PARAMETRO(4) TALLYING IND1 FOR ALL '"'
-
-                   IF IND1 = 2
-                   AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "TO"
-                    PERFORM FAI-SET    THRU EX-FAI-SET
-                    GO TO EX-TRATTA
-                   END-IF
-      *
-      *
-      *  CASE --- move function uppercase("gray") to "title" of gtk-form.
-      *
-                   MOVE ZEROS TO IND1
-                   INSPECT PARAMETRO(5) TALLYING IND1 FOR ALL '"'
-
-                   IF IND1 = 2
-                   AND (FUNCTION UPPER-CASE(PARAMETRO(2)) = "FUNCTION"
-                   AND  FUNCTION UPPER-CASE(PARAMETRO(4)) = "TO"
-                   AND  FUNCTION UPPER-CASE(PARAMETRO(6)) = "OF" )
-
-                   PERFORM VARYING IND1 FROM 3 BY 1
-                     UNTIL IND1 > CONTA-PARAM
-
-                   MOVE PARAMETRO(IND1)  TO PARAMETRO( IND1 - 1)
-
-                   END-PERFORM
-
-                   MOVE SPACES         TO PARAMETRO(CONTA-PARAM)
-                   SUBTRACT 1 FROM CONTA-PARAM
-
-                    PERFORM FAI-SET    THRU EX-FAI-SET
-                    GO TO EX-TRATTA
-                   END-IF
-
-      ** a token with ---> " OF " ----> MEANS move to get a value
-      *  infact you could have coded:
-      * 
-      *   CASE B:   move "title" of gtk-form to TITLE-OF-THE-FORM.
-      *
-      *
-                   MOVE ZEROS                    TO IND1
-
-                   INSPECT PARAMETRO(2) TALLYING IND1 FOR ALL '"'
-
-                   IF IND1 = 2
-                   AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "OF"
-                   AND FUNCTION UPPER-CASE(PARAMETRO(7)) NOT = "OF"
-
-                   MOVE PARAMETRO(2) (2:) TO ISTRUZIONE
-                   INSPECT ISTRUZIONE REPLACING ALL '"' BY " "
-                   PERFORM DO-GET        THRU EX-DO-GET
-                   GO TO EX-TRATTA
-                   END-IF
-      *
-      *   CASE C:   move "title" of gtk-form to "Text" of EDIT.
-      *
-
-                   MOVE ZEROS                    TO IND1
-
-                   INSPECT PARAMETRO(2) TALLYING IND1 FOR ALL '"'
-
-                   IF IND1 = 2
-                   AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "OF"
-                   AND FUNCTION UPPER-CASE(PARAMETRO(7)) = "OF"
-
-                   MOVE PARAMETRO(6)             TO PARAMETRO1
-                   MOVE PARAMETRO(7)             TO PARAMETRO2
-                   MOVE PARAMETRO(8)             TO PARAMETRO3
-                   MOVE PARAMETRO(9)             TO PARAMETRO4
-
-                   MOVE "agar-text"              TO PARAMETRO(6)
-                   MOVE SPACES                   TO PARAMETRO(7)
-                   MOVE SPACES                   TO PARAMETRO(8)
-                   MOVE SPACES                   TO PARAMETRO(9)
-                   MOVE METTI-DOT                TO REMEMBER-METTI-DOT
-
-                   MOVE PARAMETRO(2) (2:) TO ISTRUZIONE
-                   INSPECT ISTRUZIONE REPLACING ALL '"' BY " "
-
-                   PERFORM DO-GET                THRU EX-DO-GET
-
-                   INITIALIZE TAB-PARAMETRI
-
-
-                   MOVE REMEMBER-METTI-DOT       TO METTI-DOT
-                   MOVE "move"                   TO PARAMETRO(1)
-                   MOVE "agar-text"              TO PARAMETRO(2)
-                   MOVE "to"                     TO PARAMETRO(3)
-                   MOVE PARAMETRO1               TO PARAMETRO(4)
-                   MOVE PARAMETRO2               TO PARAMETRO(5)
-                   MOVE PARAMETRO3               TO PARAMETRO(6)
-                   MOVE PARAMETRO4               TO PARAMETRO(7)
-                   MOVE SPACES                   TO STRINGA
-
-                   STRING
-                          PARAMETRO(1) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          PARAMETRO(2) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          PARAMETRO(3) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          PARAMETRO(4) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          PARAMETRO(5) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          PARAMETRO(6) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          PARAMETRO(7) DELIMITED BY "      "
-                          " " DELIMITED BY SIZE
-                          INTO STRINGA
-
-                   PERFORM FAI-SET               THRU EX-FAI-SET
-
-                   MOVE SPACES                   TO DATI-IN STRINGA
-
-                   GO TO EX-TRATTA
-                   END-IF
-
-
-                 END-EVALUATE.
-
-                MOVE ZEROS TO IND1.
-       
-                move function upper-case(DATI-IN) TO DATI-OUT
-                
-                INSPECT DATI-OUT TALLYING IND1 FOR 
-                  ALL "WORKING-STORAGE SECTION".
-
-                IF IND1 = 1                 
-                 MOVE DATI-IN         TO DATI-OUT
-                 PERFORM SCRITTURA    THRU EX-SCRITTURA
-                 MOVE '                 copy "global".' tO DATI-OUT
-                 PERFORM SCRITTURA    THRU EX-SCRITTURA
-
-                 ADD 1 TO CONTA-WORKING-STORAGE
-
-                  IF CONTA-WORKING-STORAGE > 1
-                   MOVE '                 copy "working".' tO DATI-IN
-                  ELSE
-                   MOVE SPACES           TO DATI-IN
-                 END-IF
-
-                   go to FINE-TRATTA.
-
-                MOVE ZEROS TO IND1.
-
-                INSPECT DATI-OUT TALLYING IND1 FOR ALL 
-                '"COPY GLOBAL".'.
-                IF IND1 = 1 GO TO END-TRATTA.
-
-                INSPECT DATI-OUT TALLYING IND1 FOR ALL
-                '"COPY GLOBAL.CPY".'.
-
-                IF IND1 = 1 GO TO END-TRATTA.
-                
-        
-        FINE-TRATTA.
-        
-                 MOVE ZEROS TO IND1
-                 INSPECT
-                  FUNCTION UPPER-CASE(DATI-IN)
-                    TALLYING IND1 FOR ALL "END "
-                 
-                   IF IND1 = 1
-
-                    move zeros to IND1
-
-                   INSPECT
-                    FUNCTION UPPER-CASE(DATI-IN)
-                    TALLYING IND1 FOR ALL "METHOD."
-                        
-                    IF IND1 = 1
-                    PERFORM ADDED-LINES THRU EX-ADDED-LINES
-
-                    PERFORM FAI-ENDMETHOD THRU EX-FAI-ENDMETHOD
-                    GO TO EX-TRATTA.
- 
-                 MOVE ZEROS TO IND1
-                 INSPECT
-                  FUNCTION UPPER-CASE(DATI-IN)
-                    TALLYING IND1 FOR ALL "METHOD-ID."
-                 
-                   IF IND1 = 1
-                    PERFORM ADDED-LINES THRU EX-ADDED-LINES
-                    PERFORM FAI-METHOD THRU EX-FAI-METHOD
-                    GO TO EX-TRATTA.
-        
-                 MOVE DATI-IN         TO DATI-OUT.
-
-                 PERFORM SCRITTURA    THRU EX-SCRITTURA.
-
-        END-TRATTA.
-
-                 MOVE ZEROS TO IND1
-                 INSPECT
-                  FUNCTION UPPER-CASE(DATI-IN)
-                    TALLYING IND1 FOR ALL "EXTERNAL"
-                 
-                   IF IND1 = 1
-                   MOVE DATI-IN        TO REC-WORK
-                   WRITE REC-WORK.
-
-        EX-TRATTA.
-                EXIT.
-
-
-        FAI-METHOD.
-        
-                  MOVE SPACES    TO IDENTIFICATION-DIVISION.
- 
-                  UNSTRING  DATI-IN DELIMITED BY "." 
-                     INTO  dummy  IDENTIFICATION-DIVISION
-                     
-                   DISPLAY "METHOD:" IDENTIFICATION-DIVISION.
-                   
-                  move spaces to DATI-OUT
-                  MOVE   "        identification division."  TO REC-OUT 
-                  PERFORM SCRITTURA THRU EX-SCRITTURA
-                  STRING "        program-id. "
-                     FUNCTION TRIM(IDENTIFICATION-DIVISION)
-                       "."
-                     delimited by size into DATI-OUT
-                         PERFORM SCRITTURA THRU EX-SCRITTURA
-                         
-                   MOVE  "        environment division."  TO REC-OUT 
-                         PERFORM SCRITTURA THRU EX-SCRITTURA
-                           
-                   MOVE  "        data  division."  TO REC-OUT 
-                         PERFORM SCRITTURA THRU EX-SCRITTURA
-
-                   MOVE  "        working-storage section."  TO REC-OUT 
-                          PERFORM SCRITTURA THRU EX-SCRITTURA
-
-                   MOVE  '             copy "global".' tO DATI-OUT
-                         PERFORM SCRITTURA    THRU EX-SCRITTURA
-
-                   MOVE  '             copy "working".' TO DATI-OUT
-                   PERFORM SCRITTURA    THRU EX-SCRITTURA
-                   
-                *>    MOVE  "        procedure division."  TO REC-OUT 
-                *>          PERFORM SCRITTURA THRU EX-SCRITTURA
-                   
-                 
-                    MOVE SPACES TO DATI-IN.
-                        
-        EX-FAI-METHOD.
-                EXIT.
-
-        FAI-ENDMETHOD.
-      *
-      **** do not remove: leave this split into separate lines to allows the tp-cobol-debugger to run inside guicobol.cbl itself for testing...        
-      *
-                    STRING "       end"
-                         " program " 
-                      FUNCTION TRIM(IDENTIFICATION-DIVISION)
-                         "."
-                         delimited by size into DATI-OUT
-                         PERFORM SCRITTURA THRU EX-SCRITTURA
-                         MOVE SPACES TO DATI-IN.
-                        
-        EX-FAI-ENDMETHOD.
-                EXIT.
-
-
-        FAI-SET.
-
-                   MOVE ZEROS TO IND
-                   INSPECT STRINGA TALLYING IND FOR ALL '"'
-
-                   IF IND = ZEROS GO TO EX-FAI-SET.
-
-                   MOVE " TO "     TO COMPARA
-                   MOVE 4          TO LCOMPARA
-                   PERFORM VARYING IND FROM 1 BY 1 UNTIL IND >
-                    ( LENGTH OF STRINGA - 4 )
-                    OR FUNCTION UPPER-CASE(STRINGA(IND:LCOMPARA))
-                                           = COMPARA(1:LCOMPARA)
-                    CONTINUE
-                   END-PERFORM.
-
-                   IF IND  NOT > ( LENGTH OF STRINGA - 4 )
-                     AND FUNCTION UPPER-CASE(STRINGA(IND:LCOMPARA))
-                     = COMPARA(1:LCOMPARA)
-                     MOVE IND      TO END-COBOL
-                     MOVE STRINGA(1:END-COBOL) TO STRINGA2
-                      ADD 3 TO IND
-                      PERFORM VARYING IND FROM IND BY 1
-                       UNTIL IND > LENGTH OF STRINGA
-                      OR STRINGA(IND:1) > SPACES
-                      CONTINUE
-                      END-PERFORM
-                      IF IND NOT > LENGTH OF STRINGA
-                       AND STRINGA(IND:1) = '"'
-                       ADD 1       TO IND
-                       MOVE ZEROS  TO IND1
-                       MOVE SPACES TO ISTRUZIONE
-                       PERFORM VARYING IND FROM IND BY 1
-                        UNTIL IND > LENGTH OF STRINGA
-                       OR STRINGA(IND:1) = '"'
-                       ADD  1                    TO IND1
-                       MOVE STRINGA(IND:1)       TO ISTRUZIONE(IND1:1)
-                       END-PERFORM
-                       PERFORM DO-SET            THRU EX-DO-SET.
-
-        EX-FAI-SET.
-                  EXIT.
-
-        SCRITTURA.
-
-                 IF REC-OUT = SPACES GO TO EX-SCRITTURA.
-
-                 ADD 1                 TO CONTA-LINE.
-
-                 IF SW-FREE = "S"
-                  MOVE REC-OUT(7:)     TO STRINGA
-                  MOVE STRINGA         TO REC-OUT
-                 ELSE
-                 MOVE CONTA-LINE       TO REC-OUT(1:6).
-
-                 WRITE REC-OUT.
-                 
-                 move SPACES TO REC-OUT.
-
-        EX-SCRITTURA.
-                EXIT.
- 
-
-        APERTURE SECTION.
-
-                IF SW-VERBOSE = "S"
-                Display "Processing open file..".
-
-                MOVE ZEROS TO IND.
-                INSPECT FILE-IN  TALLYING IND FOR ALL ".gui".
-                IF IND = 1
-                 DISPLAY "Source cannot contains .gui extension"
-                 STOP RUN.
-
-                MOVE ZEROS TO IND
-                INSPECT FILE-IN TALLYING IND FOR ALL ".cbl".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".src".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".cpy".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".CBL".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".SRC".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".CPY".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".COB".
-                INSPECT FILE-IN TALLYING IND FOR ALL ".cob".
-      *
-      * ADD THE DEFAULT .CBL ESTENSION....
-      *
-                IF IND = ZEROS
-                PERFORM VARYING IND FROM 100 BY -1 UNTIL IND = ZEROS
-
-                 IF FILE-IN(IND:1) NOT = SPACES
-                 ADD 1 TO IND
-                 MOVE ".cbl" TO FILE-IN(IND:)
-                 MOVE 1      TO IND
-                 END-IF
-                 END-PERFORM
-                END-IF.
-
-
-                MOVE FILE-IN TO FILE-OUT.
-
-                INSPECT FILE-OUT REPLACING ALL ".CBL" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".SRC" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".CPY" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".cbl" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".src" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".cpy" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".COB" BY ".gui".
-                INSPECT FILE-OUT REPLACING ALL ".cob" BY ".gui".
-                MOVE ZEROS TO IND
-                INSPECT FILE-OUT TALLYING IND FOR ALL ".gui"
-                 IF IND NOT = 1
-                 DISPLAY "Source must contains cbl/src/cpy/cob " &
-                         "(upper/lower case) extension"
-                 STOP RUN.
-
-                OPEN INPUT   ARK-IN.
-
-                IF STATUS-IN NOT = 00
-                 DISPLAY "The source supplied is not available "
-                  STATUS-IN
-                 " (file:" function trim(FILE-IN) " )"
-                  STOP RUN
-                END-IF.
-
-
-                IF SW-CONST = "S"
-                 MOVE "ANDATI"  TO FILE-SYS
-                 ELSE
-                ACCEPT TIME-SYS FROM TIME
-                MOVE TIME-SYS   TO FILE-SYS
-                END-IF.
-
-                OPEN OUTPUT  ARK-OUT.
-
-                IF STATUS-OUT NOT = 00
-                 DISPLAY "Unable to create:" FILE-OUT
-                 STOP RUN
-                END-IF.
-
-                MOVE "working.cpy" to FILE-WORK.
-                OPEN OUTPUT  ARK-WORK.
-
-                IF STATUS-WORK NOT = 00
-                 DISPLAY "Unable to create:" FILE-WORK
-                 STOP RUN
-                END-IF.
-
-                move SPACES TO REC-WORK.
-
-                MOVE "      *" TO REC-WORK. WRITE REC-WORK.
-
-                MOVE "      * INTERNAL WORKING STORAGE" TO REC-WORK.
-                WRITE REC-WORK.
-
-                MOVE "      *" TO REC-WORK. WRITE REC-WORK.
-
-        EX-APERTURE.
-                EXIT.
-
-
-        CHIUSURE SECTION.
-        CHIUSUREX.
-
-                MOVE SPACES TO STRINGA.
-
-                IF EXIT-WITH-ERRORS = "Y"
-                MOVE   "Found errors, please check them" TO STRINGA
-                ELSE
-                STRING "Done...please compile the build "
-                function trim(FILE-OUT)
-                " source program. " DELIMITED BY SIZE INTO STRINGA.
-
-                DISPLAY STRINGA.
-
-                MOVE SPACES TO STRINGA.
-
-                CLOSE ARK-IN ARK-OUT ARK-WORK. 
-
-        EX-CHIUSURE.
-                EXIT.
-
-        READ-NEXT-DO.
-
-                MOVE SPACES TO REC-DO EOF-DO.
-
-                READ ARK-DO NEXT RECORD AT END
-                 MOVE "S"    TO EOF-DO.
-
-
-                IF EOF-DO = "S"
-                 MOVE SPACES TO REC-DO
-                  GO TO EX-READ-NEXT-DO.
-
-                IF DATI-DO = SPACES GO TO READ-NEXT-DO.
-
-                IF DATI-DO(1:1) = "*" GO TO READ-NEXT-DO.
-
-
-        EX-READ-NEXT-DO.
-                EXIT.
-
-        LOGO.
-                DISPLAY
-                "GuiCOBOL builder for GNUCOBOL "
-                "Versione 0.1.2.23 Package 22-02-2020".
-                DISPLAY "CopyRight(C) 2011-2020 Federico Priolo "
-                DISPLAY "                              ".
-                DISPLAY "federico.priolo@tp-one.it ".
-                DISPLAY "                              ".
-                DISPLAY "                               ".
-
-                IF SW-VERBOSE = "S"
-                DISPLAY "Running on: " TYPE-SYSTEM.
-
-                IF SW-VERBOSE = "S"
-                DISPLAY "Processing command line..".
-        EX-LOGO.
-                EXIT.
-
-        INIZIALI.
-
-                INITIALIZE PARAMETRI.
-        
-
-                MOVE 7       TO REM-COLUMN.
-
-                ACCEPT TYPE-SYSTEM FROM ENVIRONMENT 'OS' END-ACCEPT.
-
-                IF TYPE-SYSTEM NOT > SPACES
-                 ACCEPT TYPE-SYSTEM FROM ENVIRONMENT 'OSTYPE' END-ACCEPT
-                 END-IF.
-
-
-        EX-INIZIALI.
-                EXIT.
-
-        HELP.
-
-                DISPLAY "Usage: guicobol projectfile [options]".
-                DISPLAY "                              ".
-                DISPLAY "File: cobol source.cbl/cpy/src (if no suplied"
-                        '".cbl" is added by default....)'.
-                DISPLAY "                              ".
-                DISPLAY "Options:                      ".
-                DISPLAY "-? This support panel         "
-                DISPLAY "-F use free format            "
-                DISPLAY "-v Turn on verbose            ".
- 
-        EX-HELP.
-                EXIT.
-
-        OPZIONI.
-
-               ACCEPT FILE-DO FROM ENVIRONMENT "guicobol_inf"
-                END-ACCEPT.
-
-                IF FILE-DO = SPACES
-                MOVE "guicobol.inf"    TO FILE-DO.
-
-
-      ****************** > here we are sure that the command have something
-
-                PERFORM VARYING IND FROM 1 BY 1 UNTIL IND > 100
-                OR FILE-IN(IND:1) NOT = SPACES
-                 CONTINUE
-                END-PERFORM.
-
-      *
-      ****************** > if first is "-" we could have -? or -m option..
-      *
-
-                IF FILE-IN(IND:1) NOT = "-"
-
-      ****************** > from here we can check for the option
-
-                 PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
-                 OR FILE-IN(IND:1) = SPACES
-                  CONTINUE
-                 END-PERFORM
-
-                END-IF.
-
-                MOVE 1                 TO IND1.
-
-                PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
-                OR IND1 > MAXOPZ
-
-                 IF FILE-IN(IND:1) = "-"
-                 MOVE SPACES TO FILE-IN(IND:1)
-
-                 ADD 1       TO IND
-                 MOVE FILE-IN(IND:1)   TO SW-OPTION(IND1)
-                 ADD 1       TO IND1
-
-                  IF IND1 > MAXOPZ
-                   DISPLAY "Too many command line options"
-                   STOP RUN
-                  END-IF
-
-                 PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
-                 OR FILE-IN(IND:1) = SPACES
-                  MOVE SPACES TO FILE-IN(IND:1)
-                 END-PERFORM
-
-                 END-IF
-
-                END-PERFORM.
-
-                IF TAB-OPTIONS > SPACES
-                DISPLAY "Invoked argument(S) for the builder:".
-
-      *
-      *  set the appropriate switch
-      *
-                PERFORM VARYING IND FROM 1 BY 1 UNTIL IND = IND1
-
-                 EVALUATE SW-OPTION(IND)
-                  WHEN "?" MOVE "S"   TO SW-HELP
-                  DISPLAY "show the help panel............."
-                  WHEN "F" MOVE "S"   TO SW-FREE
-                  DISPLAY "use the free format reading file"
-                  WHEN "v" MOVE "S"   TO SW-VERBOSE
-                  DISPLAY "show verbose process            "
-                  WHEN OTHER
-                  DISPLAY "Bad argument in the command line:"
-                    SW-OPTION(IND)
-                  STOP RUN
-                 END-EVALUATE
-
-                END-PERFORM.
-
-
-
-                IF SW-HELP = "S"
-                 PERFORM HELP THRU EX-HELP
-                 STOP RUN.
-
-        EX-OPZIONI.
-                EXIT.
-
-        DO-INVOKE.
-
-                MOVE PARAMETRO(3) (2:) TO ISTRUZIONE.
-
-                PERFORM VARYING IND FROM 1 BY 1 UNTIL IND >
-                 LENGTH OF ISTRUZIONE
-                 OR ISTRUZIONE(IND:1) = '"'
-                 CONTINUE
-                END-PERFORM.
-                IF IND NOT > 40
-                 AND ISTRUZIONE(IND:1) = '"'
-                  MOVE SPACES TO ISTRUZIONE(IND:)
-                   PERFORM CERCA-DO    THRU EX-CERCA-DO.
-
-        EX-DO-INVOKE.
-                EXIT.
-
-        DO-IF.
-
-                MOVE PARAMETRO(2) (2:) TO ISTRUZIONE.
-
-                PERFORM VARYING IND FROM 1 BY 1 UNTIL IND >
-                 LENGTH OF ISTRUZIONE
-                 OR ISTRUZIONE(IND:1) = '"'
-                 CONTINUE
-                END-PERFORM.
-
-                IF IND NOT > 40
-                 AND ISTRUZIONE(IND:1) = '"'
-                  MOVE SPACES TO ISTRUZIONE(IND:).
-
-                PERFORM IF-GET         THRU EX-IF-GET.
-
-                PERFORM VARYING IND FROM 5 BY 1 UNTIL IND > CONTA-PARAM
-                MOVE PARAMETRO(IND)    TO   REC-OUT(13:)
-                PERFORM SCRITTURA       THRU EX-SCRITTURA
-                END-PERFORM.
-
-        EX-DO-IF.
-                EXIT.
-
-        DO-GET.
-
-                MOVE SPACES            TO STRINGA
-                STRING "GET-" ISTRUZIONE DELIMITED BY SIZE INTO
-                 STRINGA
-                 MOVE STRINGA          TO ISTRUZIONE.
-
-                PERFORM CERCA-DO       THRU EX-CERCA-DO.
-
-        EX-DO-GET.
-                EXIT.
-
-        IF-GET.
-
-                MOVE SPACES            TO STRINGA
-                STRING "IF-GET-" ISTRUZIONE DELIMITED BY SIZE INTO
-                 STRINGA
-                 MOVE STRINGA          TO ISTRUZIONE.
-
-                PERFORM CERCA-DO       THRU EX-CERCA-DO.
-
-        EX-IF-GET.
-                EXIT.
-
-        DO-SET.
-
-                MOVE SPACES            TO STRINGA
-                STRING "SET-" ISTRUZIONE DELIMITED BY SIZE INTO
-                 STRINGA
-                 MOVE STRINGA          TO ISTRUZIONE.
-
-                PERFORM CERCA-DO       THRU EX-CERCA-DO.
-
-        EX-DO-SET.
-                EXIT.
- 
-        CERCA-DO.
-
-
-                MOVE SPACES TO EOF-DO DATI-DO.
-
-                INITIALIZE TAB-FUNZIONE.
-      *
-      * get size of the INSTRUCTION...
-      *
-
-                PERFORM VARYING IND FROM LENGTH OF ISTRUZIONE
-                 BY -1 UNTIL IND = ZERO
-                   OR ISTRUZIONE(IND:1) > SPACES
-                   CONTINUE
-                END-PERFORM.
-      * look for the single scecific token... hide" ---> hideform   take this for a mistake!
-      *                                        hide "     hideform   skip since not match 
-                
-                ADD  1 to IND.
-                
-      *
-      * istruzione is always checkd into upper-case
-      *
-
-                MOVE FUNCTION UPPER-CASE(ISTRUZIONE) TO ISTRUZIONE.
-
-                 IF SW-VERBOSE = "S"
-                  Display "Build "
-                    FUNCTION TRIM(ISTRUZIONE) " " stringa(1:60).
-
-
-                OPEN INPUT ARK-DO.
-      *
-      * arrive to the #property/method declare section
-      *
-
-                PERFORM UNTIL EOF-DO = "S"
-                 OR FUNCTION UPPER-CASE(DATI-DO(2:IND))
-                                      = ISTRUZIONE(1:IND)
-
-                 IF EOF-DO NOT = "S"
-                 PERFORM READ-NEXT-DO THRU EX-READ-NEXT-DO
-                 END-IF
-
-                END-PERFORM.
-
-
-                IF EOF-DO = "S"
-                  PERFORM TOKEN-ERROR    THRU EX-TOKEN-ERROR.
-      *
-      *  here is located at #token line.. go ahead at the next valid...
-      *
-                 IF SW-VERBOSE = "S"
-                  Display "found:" DATI-DO(2:78).
-
-                IF EOF-DO NOT = "S"
-                  AND FUNCTION UPPER-CASE(DATI-DO(2:IND))
-                   = ISTRUZIONE(1:IND)
-                   UNSTRING DATI-DO(2:)
-                    DELIMITED BY ALL SPACES  INTO
-                     USAGE-PARAM(1)
-                     USAGE-PARAM(2)
-                     USAGE-PARAM(3)
-                     USAGE-PARAM(4)
-                     USAGE-PARAM(5)
-                     PERFORM VARYING IND FROM 1 BY 1 UNTIL IND > 5
-
-                     MOVE FUNCTION UPPER-CASE(USAGE-PARAM(IND))
-                                           TO USAGE-PARAM(IND)
-
-                      MOVE ZERO TO IND1
-                      INSPECT USAGE-PARAM(IND) TALLYING IND1
-                       FOR ALL "MIN="
-                       IF IND1 = 1
-                        UNSTRING USAGE-PARAM(IND)
-                        DELIMITED BY "MIN=" INTO DUMMY MIN-FUNZIONE
-                       END-IF
-
-                      MOVE ZERO TO IND1
-                      INSPECT USAGE-PARAM(IND) TALLYING IND1
-                       FOR ALL "MAX="
-                       IF IND1 = 1
-                        UNSTRING USAGE-PARAM(IND)
-                        DELIMITED BY "MAX=" INTO DUMMY MAX-FUNZIONE
-                      END-IF
-
-
-                     END-PERFORM
-
-                      IF MIN-FUNZIONE = ZEROS
-                       MOVE MAX-FUNZIONE TO MIN-FUNZIONE
-                      END-IF
-
-                      IF MAX-FUNZIONE = ZEROS
-                       MOVE MIN-FUNZIONE TO MAX-FUNZIONE
-                      END-IF
-
-                      IF MIN-FUNZIONE = ZERO
-                       AND MAX-FUNZIONE = ZERO
-                       MOVE 6          TO MIN-FUNZIONE MAX-FUNZIONE
-                      END-IF
-
-                      IF FUNCTION UPPER-CASE(PARAMETRO(1)) = "INVOKE"
-                       AND ( CONTA-PARAM  < MIN-FUNZIONE )
-                       AND MIN-FUNZIONE NOT = ZEROS
-
-      ***** WARNING STEP..  it could become an infinite loop
-
-                       PERFORM UNTIL CONTA-PARAM NOT < MIN-FUNZIONE
-
-                       PERFORM UNSTRINGA-AGAIN THRU EX-UNSTRINGA-AGAIN
-
-                       END-PERFORM
-
-                      END-IF
-
-
-                      IF FUNCTION UPPER-CASE(PARAMETRO(1)) = "INVOKE"
-                       AND ( CONTA-PARAM  < MIN-FUNZIONE
-                       OR CONTA-PARAM  > MAX-FUNZIONE )
-                        DISPLAY "numero errato di parametri "
-                         " per " USAGE-PARAM(1)
-                         " " CONTA-PARAM " invece di " MIN-FUNZIONE
-                                            " o " MAX-FUNZIONE
-                                            " at " COUNT-LINE " line "
-                       GO TO FINE-CERCA-DO
-                      END-IF
-
-
-                 PERFORM READ-NEXT-DO THRU EX-READ-NEXT-DO
-
-      *
-      *  and then manage the token by adding it inside the cobol source
-      *  take care it runs processing something otherwise an error is
-      *  occurred to we use the DONE-SOMETHING flag
-      *
-
-                 MOVE "N"    TO DONE-SOMETHING
-
-                 PERFORM UNTIL EOF-DO = "S"
-
-                 IF DATI-DO(1:1) = "#"
-                  MOVE "S" TO EOF-DO
-                  IF DONE-SOMETHING = "N"
-                   PERFORM TOKEN-ERROR    THRU EX-TOKEN-ERROR
-                  END-IF
-
-                 END-IF
-
-                 IF EOF-DO NOT = "S"
-                  PERFORM MANAGE-TEMPLATE THRU EX-MANAGE-TEMPLATE
-                 END-IF
-
-                 IF EOF-DO NOT = "S"
-                  PERFORM READ-NEXT-DO THRU EX-READ-NEXT-DO
-                 END-IF
-
-                END-PERFORM.
-
-        FINE-CERCA-DO.
-
-                CLOSE ARK-DO.
-
-        EX-CERCA-DO.
-               EXIT.
-         
-        ADDED-LINES.
-        
-                 move rec-in           to REC-OUT.
-                 move "*"              to rec-out(7:1).
-                 write rec-out.
-                 move spaces           to REC-OUT.
-                 
-        EX-ADDED-LINES.
-               EXIT.
-
-        TOKEN-ERROR.
-
-                MOVE "Y"               TO EXIT-WITH-ERRORS.
-
-                DISPLAY 
-                " Severe Error: Missing property/method into " &
-                   "guicobol.inf:"
-                 ISTRUZIONE(1:IND)
-                  " at " COUNT-LINE " line ".
-
-
-        EX-TOKEN-ERROR.
-               EXIT.
-
-        MANAGE-TEMPLATE.
-
-
-               IF DATI-DO = SPACES GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE "Y"   TO DONE-SOMETHING.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(1)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(1)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(2)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(2)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(3)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(3)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(4)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(4)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(5)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(5)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(6)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(6)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(7)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(7)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(8)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(8)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(9)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(9)                TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(10)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(10)               TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(11)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(11)               TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(12)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(12)               TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(13)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(13)               TO REC-OUT(13:)
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$COLOR(2)".
-
-               IF IND1 = 1
-                MOVE PARAMETRO(2)                TO REC-OUT(20:)
-                PERFORM SCRITTURA                THRU EX-SCRITTURA
-                GO TO EX-MANAGE-TEMPLATE.
-
-
-      *
-      *  replace instruction (put a dot yes or no (METTI-DOT=S for yes)
-      *
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$DOT".
-
-               IF IND1 = 1
-
-                IF  METTI-DOT = "S"
-                  MOVE "."             TO REC-OUT(20:1)
-                ELSE
-                  MOVE SPACES          TO REC-OUT
-                END-IF
-
-               PERFORM SCRITTURA       THRU EX-SCRITTURA
-               GO TO EX-MANAGE-TEMPLATE.
-
-
-      *
-      * LAST replace instruction
-      *
-
-               MOVE ZEROS TO IND1.
-
-               INSPECT DATI-DO TALLYING IND1 FOR ALL "$STATEMENT".
-
-               IF IND1 = 1
-                MOVE STRINGA2                    TO REC-OUT(13:)
-               ELSE
-
-      *
-      * default move instruction
-      *
-
-               MOVE DATI-DO                      TO REC-OUT.
-
-               PERFORM SCRITTURA                 THRU EX-SCRITTURA.
-        EX-MANAGE-TEMPLATE.
-               EXIT.
-
-        end program guicobol.
-
-
+000010  IDENTIFICATION DIVISION.
+000020  PROGRAM-ID.    guicobol.
+000030*---------------------------------------------------------------------
+000040*
+000050* Gui builder for OPENCOBOL
+000060* pre-release agar    18 october   2020  0.1.2.25  other.....      *
+000070* pre-release agar    26 february  2020  0.1.2.24  line of error.  *
+000080* pre-release agar    26 february  2020  0.1.2.23  fixedcolor      *
+000090* pre-release agar    22 february  2020  0.1.2.23      
+000100* pre-release agar     1 August    2019  0.1.2.18      
+000110* FIRST                1 SEPTEMBER 2011  0.1.0
+000120*
+000130* Copyright (C) 2010-2019 Federico Priolo 
+000140*
+000150* This program is free software; you can redistribute it and/or modify
+000160* it under the terms of the GNU General Public License as published by
+000170* the Free Software Foundation; either version 2, or (at your option)
+000180* any later version.
+000190*
+000200* This program is distributed in the hope that it will be useful,
+000210* but WITHOUT ANY WARRANTY; without even the implied warranty of
+000220* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+000230* GNU General Public License for more details.
+000240*
+000250* You should have received a copy of the GNU General Public License
+000260* along with this software; see the file COPYING.  If not, write to
+000270* the Free Software Foundation, 51 Franklin Street, Fifth Floor
+000280* Boston, MA 02110-1301 USA
+000290*
+000300*
+000310*---------------------------------------------------------------------
+000320  ENVIRONMENT DIVISION.
+000330  CONFIGURATION SECTION.
+000340  SOURCE-COMPUTER.        PC-IBM.
+000350  OBJECT-COMPUTER.        PC-IBM.
+000360  SPECIAL-NAMES.
+000370
+000380     DECIMAL-POINT IS COMMA.
+000390
+000400  INPUT-OUTPUT SECTION.
+000410  FILE-CONTROL.
+000420
+000430          SELECT ARK-IN ASSIGN TO  FILE-IN
+000440           ORGANIZATION IS LINE SEQUENTIAL
+000450           FILE STATUS  IS STATUS-IN.
+000460
+000470          SELECT ARK-DO ASSIGN TO  FILE-DO
+000480           ORGANIZATION IS LINE SEQUENTIAL
+000490           FILE STATUS  IS STATUS-DO.
+000500
+000510          
+000520          SELECT ARK-OUT ASSIGN TO FILE-OUT
+000530           ORGANIZATION IS LINE SEQUENTIAL
+000540           FILE STATUS  IS STATUS-OUT.
+000550
+000560          SELECT ARK-WORK ASSIGN TO FILE-WORK
+000570           ORGANIZATION IS LINE SEQUENTIAL
+000580           FILE STATUS  IS STATUS-WORK.
+000590
+000600
+000610  DATA DIVISION.
+000620  FILE SECTION.
+000630
+000640  FD ARK-WORK.
+000650  01 REC-WORK.
+000660     02 DATI-WORK               PIC X(80).
+000670
+000680
+000690  FD ARK-IN.
+000700  01 REC-IN.
+000710     02 DATI-IN                 PIC X(256).
+000720
+000730  FD ARK-DO.
+000740  01 REC-DO.
+000750     02 DATI-DO                 PIC X(500).
+000760
+000770
+000780  
+000790
+000800  FD ARK-OUT.
+000810  01 REC-OUT.
+000820     02 DATI-OUT                PIC X(256).
+000830
+000840  WORKING-STORAGE SECTION.
+000850  01 COLOR-REQUIRED             PIC X(50) VALUE SPACE.
+000860  01 TAB-FUNZIONE.
+000870     12 MIN-FUNZIONE            PIC 99.
+000880     12 MAX-FUNZIONE            PIC 99.
+000890     12 DUMMY                   PIC X.
+000900
+000910  01 PARAMETRI.
+000920   07 DEFAULT-CLOSED            PIC X VALUE SPACE.
+000930   07 IDENTIFICATION-DIVISION   pic is  X(30).
+000940   07 COUNT-LINE                PIC 9(9)   VALUE ZERO.
+000950   07 EXIT-WITH-ERRORS          PIC X      VALUE SPACE.
+000960   07 TAB-PARAMETRI.
+000970     12 METTI-DOT               PIC X      VALUE SPACE.
+000980     12 CONTA-PARAM             PIC 99     VALUE ZEROS.
+000990     12 PARAMETRO               PIC X(128) OCCURS 50 TIMES.
+001000     12 USAGE-PARAM             PIC X(30)  OCCURS 50 TIMES.
+001010   07 REMEMBER-METTI-DOT        PIC X      VALUE SPACE.
+001020   07 PARAMETRO1                PIC X(128) VALUE SPACE.
+001030   07 PARAMETRO2                PIC X(128) VALUE SPACE.
+001040   07 PARAMETRO3                PIC X(128) VALUE SPACE.
+001050   07 PARAMETRO4                PIC X(128) VALUE SPACE.
+001060   07 CONTA-LINE                PIC 9(6)   VALUE ZEROS.
+001070   07 DONE-SOMETHING            PIC X      VALUE SPACE.
+001080   07 TIME-SYS                  PIC 9(6)   VALUE ZEROS.
+001090   07 FILE-SYS                  PIC X(6)   VALUE SPACE.
+001100   07 ISTRUZIONE                PIC X(40)  VALUE SPACE.
+001110   07 VALORE                    PIC X(512) VALUE SPACE.
+001120   07 FINE-FILE                 PIC X      VALUE SPACE.
+001130   07 FILE-IN                   PIC X(200) VALUE SPACE.
+001140   07 FILE-OUT                  PIC X(200) VALUE SPACE.
+001150   07 FILE-WORK                 PIC X(200) VALUE SPACE.
+001160   07 FILE-DO                   PIC X(200) VALUE SPACE.
+001170   07 FILE-COLOR                PIC X(200) VALUE SPACE.
+001180   07 STATUS-IN                 PIC XX     VALUE SPACE.
+001190   07 STATUS-OUT                PIC XX     VALUE SPACE.
+001200   07 STATUS-DO                 PIC XX     VALUE SPACE.
+001210   07 STATUS-COLOR              PIC XX     VALUE SPACE.
+001220   07 STATUS-WORK               PIC XX     VALUE SPACE.
+001230   07 IND                       PIC 9(9)   VALUE ZEROS.
+001240   07 IND1                      PIC 9(9)   VALUE ZEROS.
+001250   07 IND2                      PIC 9(9)   VALUE ZEROS.
+001260   07 END-COBOL                 PIC 9(3)   VALUE ZEROS.
+001270   07 START-COBOL               PIC 9(3)   VALUE ZEROS.
+001280   07 STRINGA                   PIC X(256) VALUE SPACE.
+001290   07 STRINGA1                  PIC X(256) VALUE SPACE.
+001300   07 COMPARA                   PIC X(10)  VALUE SPACE.
+001310   07 LCOMPARA                  PIC 99     VALUE ZEROS.
+001320   07 STRINGA2                  PIC X(256) VALUE SPACE.
+001330   07 LSTRINGA2                 PIC 99     VALUE ZEROS.
+001340   07 CHIUSO                    PIC XX     VALUE SPACE.
+001350   07 COMANDO                   PIC X(1024) VALUE SPACES.
+001360   07 COPY1                     PIC X(100) VALUE SPACE.
+001370   07 COPY2                     PIC X(100) VALUE SPACE.
+001380   07 DO-DLL                    PIC XX     VALUE SPACE.
+001390   07 TAB-OPTIONS.
+001400    09 SW-OPTION                PIC X OCCURS 20 TIMES.
+001410   78 MAXOPZ                    VALUE 20.
+001420   07 SW-NOCOMPILA              PIC X.
+001430   07 SW-SAVE                   PIC X.
+001440   07 SW-DATI                   PIC X.
+001450   07 SW-DATI-OK                PIC X.
+001460   07 SW-HELP                   PIC X.
+001470   07 SW-MANUAL                 PIC X.
+001480   07 SW-CODICE                 PIC X.
+001490   07 SW-FREE                   PIC X.
+001500   07 SW-CONST                  PIC X.
+001510   07 SW-STOP                   PIC X.
+001520   07 SW-EXE                    PIC X.
+001530   07 SW-ANALYSIS               PIC X.
+001540   07 SW-VERBOSE                PIC X.
+001550   07 XX                        PIC XX.
+001560   07 REM-COLUMN                PIC 9.
+001570   07 CAMPO1                    PIC X(30).
+001580   07 CAMPO2.
+001590     09 LIVELLO                 PIC 99.
+001600       88 LIVELLO-OK            VALUE 01 THRU 77
+001610                                      79 THRU 87.
+001620
+001630   07 CAMPO3                    PIC X(30).
+001640   07 CAMPO4                    PIC X(30).
+001650   07 CAMPO5                    PIC X(30).
+001660   07 RIC-LIVELLO               PIC 99.
+001670   07 INSIDE-OCCURS             PIC XX.
+001680   07 EOF-DO                    PIC X.
+001690   07 EOF-COLOR                 PIC X.
+001700   07 AREA-DATI                 PIC X.
+001710   07 TYPE-SYSTEM               PIC X(10).
+001720   07 CONTA-STACK               PIC 9(9).
+001730   07 CONTA-RECORD              PIC 9(9).
+001740   07 MIN-RECORD                PIC 9(9).
+001750   07 MAX-RECORD                PIC 9(9).
+001760   07 START-RECORD              PIC 9(9).
+001770   07 POINT-RECORD              PIC 9(9).
+001780   07 ESCI                      PIC XX     VALUE SPACE.
+001790   07 PARENT                    PIC X(30)  VALUE SPACE.
+001800   07 GLOBAL-LEVEL              PIC 99     VALUE ZEROS.
+001810   07 LAST-LABEL                PIC X(30)  VALUE SPACE.
+001820   07 THIS-LABEL                PIC X(30)  VALUE SPACE.
+001830   07 CONTA-WORKING-STORAGE     PIC 99     VALUE ZERO.
+001840
+001850
+001860
+001870  PROCEDURE DIVISION.
+001880  INIZIO SECTION.
+001890
+001900          PERFORM INIZIALI      THRU EX-INIZIALI.
+001910
+001920          PERFORM LOGO          THRU EX-LOGO.
+001930
+001940          ACCEPT FILE-IN FROM COMMAND-LINE.
+001950
+001960          IF FILE-IN  = SPACES
+001970           PERFORM HELP THRU EX-HELP
+001980            STOP RUN
+001990          END-IF.
+002000
+002010          PERFORM OPZIONI  THRU EX-OPZIONI.
+002020
+002030          PERFORM APERTURE THRU EX-APERTURE.
+002040
+002050          PERFORM ELABORA  THRU EX-ELABORA UNTIL FINE-FILE = "S".
+002060
+002070          PERFORM CHIUSURE THRU EX-CHIUSURE.
+002080
+002090          GOBACK.
+002100
+002110  LETTURA.
+002120
+002130          IF FINE-FILE = "S" GO TO EX-LETTURA.
+002140
+002150          MOVE SPACES            TO REC-IN REC-OUT.
+002160
+002170          IF FINE-FILE NOT = "S"
+002180           READ ARK-IN NEXT AT END
+002190            MOVE "S" TO FINE-FILE
+002200           END-IF.
+002210
+002220          IF FINE-FILE = "S" GO TO EX-LETTURA.
+002230
+002240          ADD 1 TO COUNT-LINE.
+002250
+002260
+002270          MOVE ZEROS TO          IND.
+002280          INSPECT FUNCTION UPPER-CASE(REC-IN)
+002290           TALLYING IND FOR ALL ">>SOURCE FORMAT IS FREE"
+002300*
+002310*    before to set true the FREE FORMAT switch
+002320*    we must decide if it is not another ... for example
+002330*    if you want to debug the animator with animator itself..
+002340*    it could find the sentence but with other meaning...
+002350*
+002360            IF IND = 1
+002370            MOVE FUNCTION UPPER-CASE(REC-IN) TO STRINGA
+002380            MOVE SPACES         TO COMANDO
+002390            UNSTRING STRINGA
+002400             DELIMITED BY ">>SOURCE FORMAT IS FREE"
+002410              INTO COMANDO ISTRUZIONE
+002420             END-UNSTRING
+002430             IF ISTRUZIONE = SPACES
+002440             MOVE "S"             TO SW-FREE
+002450             MOVE 1               TO REM-COLUMN
+002460             MOVE REC-IN          TO REC-OUT
+002470             WRITE REC-OUT
+002480             GO TO LETTURA.
+002490
+002500           IF REC-IN(7:1) = "*" GO TO LETTURA.
+002510
+002520*
+002530** manage the free format option
+002540*
+002550
+002560          IF SW-FREE =  "S"
+002570          AND REC-IN > SPACES
+002580           PERFORM VARYING IND FROM 1 BY 1 UNTIL IND > 100
+002590            OR REC-IN(IND:1) NOT = SPACES
+002600            CONTINUE
+002610            END-PERFORM
+002620
+002630            MOVE SPACES          TO STRINGA
+002640
+002650             IF REC-IN(IND:1) = "*"
+002660
+002670              MOVE 7              TO IND1
+002680
+002690              IF REC-IN((IND + 1):1) = SPACES
+002700              MOVE ">" TO REC-IN((IND + 1) :1)
+002710              END-IF
+002720
+002730             ELSE
+002740
+002750              MOVE 8              TO IND1
+002760
+002770             END-IF
+002780
+002790             MOVE REC-IN(IND: )   TO STRINGA(IND1:)
+002800             MOVE STRINGA         TO REC-IN
+002810
+002820          END-IF.
+002830
+002840          IF REC-IN(7:) = SPACES GO TO LETTURA.
+002850          
+002860
+002870          if REC-IN(1:6) NUMERIC 
+002880           MOVE 7        TO IND
+002890           ELSE
+002900           MOVE 1        TO IND.
+002910
+002920           PERFORM VARYING IND FROM IND BY  1 UNTIL IND > 100
+002930           OR REC-IN(IND:1) > SPACES
+002940            CONTINUE
+002950           END-PERFORM.
+002960*
+002970****  a line with only a character is skiped (.) or other...
+002980*
+002990           IF REC-IN(IND + 1:) =  " " GO TO LETTURA.
+003000
+003010           MOVE REC-IN(IND:)    TO STRINGA.
+003020
+003030
+003040          MOVE ZEROS TO          IND.
+003050          INSPECT FUNCTION UPPER-CASE(REC-IN)
+003060           TALLYING IND FOR ALL ' "CLOSED"'
+003070           
+003080          IF IND = 1 MOVE "N"   TO DEFAULT-CLOSED.
+003090*
+003100
+003110
+003120  EX-LETTURA.
+003130          EXIT.
+003140
+003150  ELABORA SECTION.
+003160
+003170          IF FINE-FILE NOT = "S"
+003180            PERFORM LETTURA      THRU EX-LETTURA
+003190            PERFORM TRATTA       THRU EX-TRATTA.
+003200
+003210  EX-ELABORA.
+003220          EXIT.
+003230
+003240  UNSTRINGA-AGAIN.
+003250
+003260         IF SW-VERBOSE = "S"
+003270          display " VERBOSE:loop again for " conta-param " OF  "
+003280          min-funzione
+003290          " " FUNCTION TRIM(STRINGA).
+003300
+003310          PERFORM LETTURA        THRU EX-LETTURA.
+003320
+003330          IF FINE-FILE = "S" GO TO EX-UNSTRINGA-AGAIN.
+003340
+003350          PERFORM UNSTRINGA      THRU EX-UNSTRINGA.
+003360
+003370  EX-UNSTRINGA-AGAIN.
+003380          EXIT.
+003390
+003400  UNSTRINGA.
+003410
+003420          MOVE 1 TO IND.
+003430
+003440  CICLO-UNSTRINGA.
+003450
+003460          PERFORM VARYING IND FROM IND BY 1 UNTIL IND >  100
+003470          OR STRINGA(IND:1) > SPACES
+003480          CONTINUE
+003490          END-PERFORM.
+003500
+003510          IF IND > 100 GO TO FINE-UNSTRINGA.
+003520
+003530
+003540          MOVE STRINGA           TO STRINGA1
+003550
+003560          IF STRINGA(IND:1) = '"'
+003570           MOVE IND              TO IND2
+003580           ADD 1                 TO IND2
+003590           PERFORM VARYING IND2 FROM IND2 BY 1 UNTIL IND2 > 100
+003600            OR  STRINGA(IND2:1) = '"'
+003610             IF STRINGA1(IND2:1) = SPACE
+003620             MOVE "!"  TO STRINGA1(IND2:1)
+003630             END-IF
+003640           END-PERFORM
+003650          END-IF.
+003660
+003670          MOVE 1 TO IND1.
+003680          ADD 1  TO CONTA-PARAM.
+003690
+003700          PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
+003710           OR STRINGA1(IND:1) = SPACES
+003720
+003730           IF IND1 NOT > LENGTH OF PARAMETRO(CONTA-PARAM)
+003740           MOVE STRINGA(IND:1)  TO PARAMETRO(CONTA-PARAM)(IND1:1)
+003750           ADD  1               TO IND1
+003760           END-IF
+003770
+003780          END-PERFORM.
+003790
+003800          IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "SELF"
+003810           MOVE "agar-Form"       TO PARAMETRO(CONTA-PARAM).
+003820
+003830          IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "SELF."
+003840           MOVE "agar-Form."      TO PARAMETRO(CONTA-PARAM).
+003850
+003860          IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "TRUE "
+003870           MOVE "1"               TO PARAMETRO(CONTA-PARAM).
+003880
+003890         IF FUNCTION UPPER-CASE(PARAMETRO(CONTA-PARAM)) = "FALSE "
+003900           MOVE "0"               TO PARAMETRO(CONTA-PARAM).
+003910
+003920
+003930          GO TO CICLO-UNSTRINGA.
+003940
+003950  FINE-UNSTRINGA.
+003960
+003970           MOVE "N"              TO METTI-DOT.
+003980
+003990           IF PARAMETRO(CONTA-PARAM) = "."
+004000            MOVE "S"             TO METTI-DOT.
+004010
+004020           PERFORM VARYING IND FROM
+004030             LENGTH OF PARAMETRO(CONTA-PARAM)
+004040              BY -1 UNTIL IND = ZEROS
+004050           OR PARAMETRO(CONTA-PARAM) (IND:1) > SPACES
+004060           CONTINUE
+004070           END-PERFORM
+004080           IF IND > ZEROS
+004090            AND PARAMETRO(CONTA-PARAM) (IND:1) = "."
+004100            MOVE SPACES     TO PARAMETRO(CONTA-PARAM)(IND:1)
+004110            MOVE "S"        TO METTI-DOT.
+004120
+004130  EX-UNSTRINGA.
+004140          EXIT.
+004150
+004160  TRATTA.
+004170
+004180           MOVE SPACES           TO TAB-PARAMETRI.
+004190
+004200           MOVE ZEROS            TO IND1.
+004210           MOVE ZEROS            TO CONTA-PARAM.
+004220
+004230           PERFORM UNSTRINGA     THRU EX-UNSTRINGA.
+004240
+004250
+004260           EVALUATE FUNCTION UPPER-CASE(PARAMETRO(1))
+004270
+004280*
+004290*   CASE A:   IF "title" of gtk-form .......
+004300*
+004310
+004320            WHEN "IF"
+004330
+004340             PERFORM ADDED-LINES     THRU EX-ADDED-LINES
+004350
+004360             MOVE ZEROS                    TO IND1
+004370
+004380             INSPECT PARAMETRO(2) TALLYING IND1 FOR ALL '"'
+004390
+004400             IF IND1 = 2
+004410             AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "OF"
+004420             PERFORM DO-IF     THRU EX-DO-IF
+004430             GO TO EX-TRATTA
+004440
+004450
+004460            WHEN "INVOKE"
+004470
+004480             PERFORM ADDED-LINES     THRU EX-ADDED-LINES
+004490             
+004500             PERFORM DO-INVOKE THRU EX-DO-INVOKE
+004510             GO TO EX-TRATTA
+004520
+004530            WHEN "MOVE"
+004540
+004550             PERFORM ADDED-LINES     THRU EX-ADDED-LINES
+004560*
+004570*   CASE A:   move "name of the window" to "title" of gtk-form.
+004580*
+004590             MOVE ZEROS TO IND1
+004600             INSPECT PARAMETRO(4) TALLYING IND1 FOR ALL '"'
+004610
+004620             IF IND1 = 2
+004630             AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "TO"
+004640              PERFORM FAI-SET    THRU EX-FAI-SET
+004650              GO TO EX-TRATTA
+004660             END-IF
+004670*
+004680*
+004690*  CASE --- move function uppercase("gray") to "title" of gtk-form.
+004700*
+004710             MOVE ZEROS TO IND1
+004720             INSPECT PARAMETRO(5) TALLYING IND1 FOR ALL '"'
+004730
+004740             IF IND1 = 2
+004750             AND (FUNCTION UPPER-CASE(PARAMETRO(2)) = "FUNCTION"
+004760             AND  FUNCTION UPPER-CASE(PARAMETRO(4)) = "TO"
+004770             AND  FUNCTION UPPER-CASE(PARAMETRO(6)) = "OF" )
+004780
+004790             PERFORM VARYING IND1 FROM 3 BY 1
+004800               UNTIL IND1 > CONTA-PARAM
+004810
+004820             MOVE PARAMETRO(IND1)  TO PARAMETRO( IND1 - 1)
+004830
+004840             END-PERFORM
+004850
+004860             MOVE SPACES         TO PARAMETRO(CONTA-PARAM)
+004870             SUBTRACT 1 FROM CONTA-PARAM
+004880
+004890              PERFORM FAI-SET    THRU EX-FAI-SET
+004900              GO TO EX-TRATTA
+004910             END-IF
+004920
+004930** a token with ---> " OF " ----> MEANS move to get a value
+004940*  infact you could have coded:
+004950* 
+004960*   CASE B:   move "title" of gtk-form to TITLE-OF-THE-FORM.
+004970*
+004980*
+004990             MOVE ZEROS                    TO IND1
+005000
+005010             INSPECT PARAMETRO(2) TALLYING IND1 FOR ALL '"'
+005020
+005030             IF IND1 = 2
+005040             AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "OF"
+005050             AND FUNCTION UPPER-CASE(PARAMETRO(7)) NOT = "OF"
+005060
+005070             MOVE PARAMETRO(2) (2:) TO ISTRUZIONE
+005080             INSPECT ISTRUZIONE REPLACING ALL '"' BY " "
+005090             PERFORM DO-GET        THRU EX-DO-GET
+005100             GO TO EX-TRATTA
+005110             END-IF
+005120*
+005130*   CASE C:   move "title" of gtk-form to "Text" of EDIT.
+005140*
+005150
+005160             MOVE ZEROS                    TO IND1
+005170
+005180             INSPECT PARAMETRO(2) TALLYING IND1 FOR ALL '"'
+005190
+005200             IF IND1 = 2
+005210             AND FUNCTION UPPER-CASE(PARAMETRO(3)) = "OF"
+005220             AND FUNCTION UPPER-CASE(PARAMETRO(7)) = "OF"
+005230
+005240             MOVE PARAMETRO(6)             TO PARAMETRO1
+005250             MOVE PARAMETRO(7)             TO PARAMETRO2
+005260             MOVE PARAMETRO(8)             TO PARAMETRO3
+005270             MOVE PARAMETRO(9)             TO PARAMETRO4
+005280
+005290             MOVE "agar-text"              TO PARAMETRO(6)
+005300             MOVE SPACES                   TO PARAMETRO(7)
+005310             MOVE SPACES                   TO PARAMETRO(8)
+005320             MOVE SPACES                   TO PARAMETRO(9)
+005330             MOVE METTI-DOT                TO REMEMBER-METTI-DOT
+005340
+005350             MOVE PARAMETRO(2) (2:) TO ISTRUZIONE
+005360             INSPECT ISTRUZIONE REPLACING ALL '"' BY " "
+005370
+005380             PERFORM DO-GET                THRU EX-DO-GET
+005390
+005400             INITIALIZE TAB-PARAMETRI
+005410
+005420
+005430             MOVE REMEMBER-METTI-DOT       TO METTI-DOT
+005440             MOVE "move"                   TO PARAMETRO(1)
+005450             MOVE "agar-text"              TO PARAMETRO(2)
+005460             MOVE "to"                     TO PARAMETRO(3)
+005470             MOVE PARAMETRO1               TO PARAMETRO(4)
+005480             MOVE PARAMETRO2               TO PARAMETRO(5)
+005490             MOVE PARAMETRO3               TO PARAMETRO(6)
+005500             MOVE PARAMETRO4               TO PARAMETRO(7)
+005510             MOVE SPACES                   TO STRINGA
+005520
+005530             STRING
+005540                    PARAMETRO(1) DELIMITED BY "      "
+005550                    " " DELIMITED BY SIZE
+005560                    PARAMETRO(2) DELIMITED BY "      "
+005570                    " " DELIMITED BY SIZE
+005580                    PARAMETRO(3) DELIMITED BY "      "
+005590                    " " DELIMITED BY SIZE
+005600                    PARAMETRO(4) DELIMITED BY "      "
+005610                    " " DELIMITED BY SIZE
+005620                    PARAMETRO(5) DELIMITED BY "      "
+005630                    " " DELIMITED BY SIZE
+005640                    PARAMETRO(6) DELIMITED BY "      "
+005650                    " " DELIMITED BY SIZE
+005660                    PARAMETRO(7) DELIMITED BY "      "
+005670                    " " DELIMITED BY SIZE
+005680                    INTO STRINGA
+005690
+005700             PERFORM FAI-SET               THRU EX-FAI-SET
+005710
+005720             MOVE SPACES                   TO DATI-IN STRINGA
+005730
+005740             GO TO EX-TRATTA
+005750             END-IF
+005760
+005770
+005780           END-EVALUATE.
+005790
+005800          MOVE ZEROS TO IND1.
+005810 
+005820          move function upper-case(DATI-IN) TO DATI-OUT
+005830          
+005840          INSPECT DATI-OUT TALLYING IND1 FOR 
+005850            ALL "WORKING-STORAGE SECTION".
+005860
+005870          IF IND1 = 1                 
+005880           MOVE DATI-IN         TO DATI-OUT
+005890           PERFORM SCRITTURA    THRU EX-SCRITTURA
+005900           MOVE '                 copy "global".' tO DATI-OUT
+005910           PERFORM SCRITTURA    THRU EX-SCRITTURA
+005920
+005930           ADD 1 TO CONTA-WORKING-STORAGE
+005940
+005950            IF CONTA-WORKING-STORAGE > 1
+005960             MOVE '                 copy "working".' tO DATI-IN
+005970            ELSE
+005980             MOVE SPACES           TO DATI-IN
+005990           END-IF
+006000
+006010             go to FINE-TRATTA.
+006020
+006030          MOVE ZEROS TO IND1.
+006040
+006050          INSPECT DATI-OUT TALLYING IND1 FOR ALL 
+006060          '"COPY GLOBAL".'.
+006070          IF IND1 = 1 GO TO END-TRATTA.
+006080
+006090          INSPECT DATI-OUT TALLYING IND1 FOR ALL
+006100          '"COPY GLOBAL.CPY".'.
+006110
+006120          IF IND1 = 1 GO TO END-TRATTA.
+006130          
+006140  
+006150  FINE-TRATTA.
+006160  
+006170           MOVE ZEROS TO IND1
+006180           INSPECT
+006190            FUNCTION UPPER-CASE(DATI-IN)
+006200              TALLYING IND1 FOR ALL "END "
+006210           
+006220             IF IND1 = 1
+006230
+006240              move zeros to IND1
+006250
+006260             INSPECT
+006270              FUNCTION UPPER-CASE(DATI-IN)
+006280              TALLYING IND1 FOR ALL "METHOD."
+006290                  
+006300              IF IND1 = 1
+006310              PERFORM ADDED-LINES THRU EX-ADDED-LINES
+006320
+006330              PERFORM FAI-ENDMETHOD THRU EX-FAI-ENDMETHOD
+006340              GO TO EX-TRATTA.
+006350
+006360           MOVE ZEROS TO IND1
+006370           INSPECT
+006380            FUNCTION UPPER-CASE(DATI-IN)
+006390              TALLYING IND1 FOR ALL "METHOD-ID."
+006400           
+006410             IF IND1 = 1
+006420              PERFORM ADDED-LINES THRU EX-ADDED-LINES
+006430              PERFORM FAI-METHOD THRU EX-FAI-METHOD
+006440              GO TO EX-TRATTA.
+006450  
+006460           MOVE DATI-IN         TO DATI-OUT.
+006470
+006480           PERFORM SCRITTURA    THRU EX-SCRITTURA.
+006490
+006500  END-TRATTA.
+006510
+006520           MOVE ZEROS TO IND1
+006530           INSPECT
+006540            FUNCTION UPPER-CASE(DATI-IN)
+006550              TALLYING IND1 FOR ALL "EXTERNAL"
+006560           
+006570             IF IND1 = 1
+006580             MOVE DATI-IN        TO REC-WORK
+006590             WRITE REC-WORK.
+006600
+006610  EX-TRATTA.
+006620          EXIT.
+006630
+006640
+006650  FAI-METHOD.
+006660  
+006670            MOVE SPACES    TO IDENTIFICATION-DIVISION.
+006680
+006690            UNSTRING  DATI-IN DELIMITED BY "." 
+006700               INTO  dummy  IDENTIFICATION-DIVISION
+006710               
+006720             DISPLAY "METHOD:" IDENTIFICATION-DIVISION.
+006730             
+006740            move spaces to DATI-OUT
+006750            MOVE   "        identification division."  TO REC-OUT 
+006760            PERFORM SCRITTURA THRU EX-SCRITTURA
+006770            STRING "        program-id. "
+006780               FUNCTION TRIM(IDENTIFICATION-DIVISION)
+006790                 "."
+006800               delimited by size into DATI-OUT
+006810                   PERFORM SCRITTURA THRU EX-SCRITTURA
+006820                   
+006830             MOVE  "        environment division."  TO REC-OUT 
+006840                   PERFORM SCRITTURA THRU EX-SCRITTURA
+006850                     
+006860             MOVE  "        data  division."  TO REC-OUT 
+006870                   PERFORM SCRITTURA THRU EX-SCRITTURA
+006880
+006890             MOVE  "        working-storage section."  TO REC-OUT 
+006900                    PERFORM SCRITTURA THRU EX-SCRITTURA
+006910
+006920             MOVE  '             copy "global".' tO DATI-OUT
+006930                   PERFORM SCRITTURA    THRU EX-SCRITTURA
+006940
+006950             MOVE  '             copy "working".' TO DATI-OUT
+006960             PERFORM SCRITTURA    THRU EX-SCRITTURA
+006970             
+006980          *>    MOVE  "        procedure division."  TO REC-OUT 
+006990          *>          PERFORM SCRITTURA THRU EX-SCRITTURA
+007000             
+007010           
+007020              MOVE SPACES TO DATI-IN.
+007030                  
+007040  EX-FAI-METHOD.
+007050          EXIT.
+007060
+007070  FAI-ENDMETHOD.
+007080*
+007090**** do not remove: leave this split into separate lines to allows the tp-cobol-debugger to run inside guicobol.cbl itself for testing...        
+007100*
+007110              STRING "       end"
+007120                   " program " 
+007130                FUNCTION TRIM(IDENTIFICATION-DIVISION)
+007140                   "."
+007150                   delimited by size into DATI-OUT
+007160                   PERFORM SCRITTURA THRU EX-SCRITTURA
+007170                   MOVE SPACES TO DATI-IN.
+007180                  
+007190  EX-FAI-ENDMETHOD.
+007200          EXIT.
+007210
+007220
+007230  FAI-SET.
+007240
+007250             MOVE ZEROS TO IND
+007260             INSPECT STRINGA TALLYING IND FOR ALL '"'
+007270
+007280             IF IND = ZEROS GO TO EX-FAI-SET.
+007290
+007300             MOVE " TO "     TO COMPARA
+007310             MOVE 4          TO LCOMPARA
+007320             PERFORM VARYING IND FROM 1 BY 1 UNTIL IND >
+007330              ( LENGTH OF STRINGA - 4 )
+007340              OR FUNCTION UPPER-CASE(STRINGA(IND:LCOMPARA))
+007350                                     = COMPARA(1:LCOMPARA)
+007360              CONTINUE
+007370             END-PERFORM.
+007380
+007390             IF IND  NOT > ( LENGTH OF STRINGA - 4 )
+007400               AND FUNCTION UPPER-CASE(STRINGA(IND:LCOMPARA))
+007410               = COMPARA(1:LCOMPARA)
+007420               MOVE IND      TO END-COBOL
+007430               MOVE STRINGA(1:END-COBOL) TO STRINGA2
+007440                ADD 3 TO IND
+007450                PERFORM VARYING IND FROM IND BY 1
+007460                 UNTIL IND > LENGTH OF STRINGA
+007470                OR STRINGA(IND:1) > SPACES
+007480                CONTINUE
+007490                END-PERFORM
+007500                IF IND NOT > LENGTH OF STRINGA
+007510                 AND STRINGA(IND:1) = '"'
+007520                 ADD 1       TO IND
+007530                 MOVE ZEROS  TO IND1
+007540                 MOVE SPACES TO ISTRUZIONE
+007550                 PERFORM VARYING IND FROM IND BY 1
+007560                  UNTIL IND > LENGTH OF STRINGA
+007570                 OR STRINGA(IND:1) = '"'
+007580                 ADD  1                    TO IND1
+007590                 MOVE STRINGA(IND:1)       TO ISTRUZIONE(IND1:1)
+007600                 END-PERFORM
+007610                 PERFORM DO-SET            THRU EX-DO-SET.
+007620
+007630  EX-FAI-SET.
+007640            EXIT.
+007650
+007660  SCRITTURA.
+007670
+007680           IF REC-OUT = SPACES GO TO EX-SCRITTURA.
+007690
+007700           ADD 1                 TO CONTA-LINE.
+007710
+007720           IF SW-FREE = "S"
+007730            MOVE REC-OUT(7:)     TO STRINGA
+007740            MOVE STRINGA         TO REC-OUT
+007750           ELSE
+007760           MOVE CONTA-LINE       TO REC-OUT(1:6).
+007770
+007780           WRITE REC-OUT.
+007790           
+007800           move SPACES TO REC-OUT.
+007810
+007820  EX-SCRITTURA.
+007830          EXIT.
+007840
+007850
+007860  APERTURE SECTION.
+007870
+007880          IF SW-VERBOSE = "S"
+007890          Display "VERBOSE:Processing open file..".
+007900
+007910          MOVE ZEROS TO IND.
+007920          INSPECT FILE-IN  TALLYING IND FOR ALL ".gui".
+007930          IF IND = 1
+007940           DISPLAY "Source cannot contains .gui extension"
+007950           STOP RUN.
+007960
+007970          MOVE ZEROS TO IND
+007980          INSPECT FILE-IN TALLYING IND FOR ALL ".cbl".
+007990          INSPECT FILE-IN TALLYING IND FOR ALL ".src".
+008000          INSPECT FILE-IN TALLYING IND FOR ALL ".cpy".
+008010          INSPECT FILE-IN TALLYING IND FOR ALL ".CBL".
+008020          INSPECT FILE-IN TALLYING IND FOR ALL ".SRC".
+008030          INSPECT FILE-IN TALLYING IND FOR ALL ".CPY".
+008040          INSPECT FILE-IN TALLYING IND FOR ALL ".COB".
+008050          INSPECT FILE-IN TALLYING IND FOR ALL ".cob".
+008060*
+008070* ADD THE DEFAULT .CBL ESTENSION....
+008080*
+008090          IF IND = ZEROS
+008100          PERFORM VARYING IND FROM 100 BY -1 UNTIL IND = ZEROS
+008110
+008120           IF FILE-IN(IND:1) NOT = SPACES
+008130           ADD 1 TO IND
+008140           MOVE ".cbl" TO FILE-IN(IND:)
+008150           MOVE 1      TO IND
+008160           END-IF
+008170           END-PERFORM
+008180          END-IF.
+008190
+008200
+008210          MOVE FILE-IN TO FILE-OUT.
+008220
+008230          INSPECT FILE-OUT REPLACING ALL ".CBL" BY ".gui".
+008240          INSPECT FILE-OUT REPLACING ALL ".SRC" BY ".gui".
+008250          INSPECT FILE-OUT REPLACING ALL ".CPY" BY ".gui".
+008260          INSPECT FILE-OUT REPLACING ALL ".cbl" BY ".gui".
+008270          INSPECT FILE-OUT REPLACING ALL ".src" BY ".gui".
+008280          INSPECT FILE-OUT REPLACING ALL ".cpy" BY ".gui".
+008290          INSPECT FILE-OUT REPLACING ALL ".COB" BY ".gui".
+008300          INSPECT FILE-OUT REPLACING ALL ".cob" BY ".gui".
+008310          MOVE ZEROS TO IND
+008320          INSPECT FILE-OUT TALLYING IND FOR ALL ".gui"
+008330           IF IND NOT = 1
+008340           DISPLAY "Source must contains cbl/src/cpy/cob " &
+008350                   "(upper/lower case) extension"
+008360           STOP RUN.
+008370
+008380          OPEN INPUT   ARK-IN.
+008390
+008400          IF STATUS-IN NOT = 00
+008410           DISPLAY "The source supplied is not available "
+008420            STATUS-IN
+008430           " (file:" function trim(FILE-IN) " )"
+008440            STOP RUN
+008450          END-IF.
+008460
+008470
+008480          IF SW-CONST = "S"
+008490           MOVE "ANDATI"  TO FILE-SYS
+008500           ELSE
+008510          ACCEPT TIME-SYS FROM TIME
+008520          MOVE TIME-SYS   TO FILE-SYS
+008530          END-IF.
+008540
+008550          OPEN OUTPUT  ARK-OUT.
+008560
+008570          IF STATUS-OUT NOT = 00
+008580           DISPLAY "Unable to create:" FILE-OUT
+008590           STOP RUN
+008600          END-IF.
+008610
+008620          MOVE "working.cpy" to FILE-WORK.
+008630          OPEN OUTPUT  ARK-WORK.
+008640
+008650          IF STATUS-WORK NOT = 00
+008660           DISPLAY "Unable to create:" FILE-WORK
+008670           STOP RUN
+008680          END-IF.
+008690
+008700          move SPACES TO REC-WORK.
+008710
+008720          MOVE "      *" TO REC-WORK. WRITE REC-WORK.
+008730
+008740          MOVE "      * INTERNAL WORKING STORAGE" TO REC-WORK.
+008750          WRITE REC-WORK.
+008760
+008770          MOVE "      *" TO REC-WORK. WRITE REC-WORK.
+008780
+008790  EX-APERTURE.
+008800          EXIT.
+008810
+008820
+008830  CHIUSURE SECTION.
+008840  CHIUSUREX.
+008850
+008860          MOVE SPACES TO STRINGA.
+008870
+008880          IF EXIT-WITH-ERRORS = "Y"
+008890          MOVE   "Found errors, please check them" TO STRINGA
+008900          ELSE
+008910          STRING "Done...please compile the build "
+008920          function trim(FILE-OUT)
+008930          " source program. " DELIMITED BY SIZE INTO STRINGA.
+008940
+008950          DISPLAY STRINGA.
+008960
+008970          MOVE SPACES TO STRINGA.
+008980
+008990          CLOSE ARK-IN ARK-OUT ARK-WORK. 
+009000          
+009010          IF SW-VERBOSE = "S"
+009020          IF DEFAULT-CLOSED = "Y"
+009030           display "VERBOSE: added a closed default procedure..."
+009040           else 
+009050          display 
+009051		"VERBOSE: A custom closed was found not used default". 
+009060                         
+009070
+009080
+009090  EX-CHIUSURE.
+009100          EXIT.
+009110
+009120  READ-NEXT-DO.
+009130
+009140          MOVE SPACES TO REC-DO EOF-DO.
+009150
+009160          READ ARK-DO NEXT RECORD AT END
+009170           MOVE "S"    TO EOF-DO.
+009180
+009190
+009200          IF EOF-DO = "S"
+009210           MOVE SPACES TO REC-DO
+009220            GO TO EX-READ-NEXT-DO.
+009230
+009240          IF DATI-DO = SPACES GO TO READ-NEXT-DO.
+009250
+009260          IF DATI-DO(1:1) = "*" GO TO READ-NEXT-DO.
+009270
+009280
+009290  EX-READ-NEXT-DO.
+009300          EXIT.
+009310
+009320  LOGO.
+009330          DISPLAY
+009340          "GuiCOBOL builder for GNUCOBOL "
+009350          "Versione 0.1.2.25 Package 18-10-2020".
+009360          DISPLAY "CopyRight(C) 2011-2020 Federico Priolo "
+009370          DISPLAY "                              ".
+009380          DISPLAY "federico.priolo@tp-one.it ".
+009390          DISPLAY "                              ".
+009400          DISPLAY "                               ".
+009410
+009420          IF SW-VERBOSE = "S"
+009430          DISPLAY "VERBOSE: Running on " TYPE-SYSTEM
+009440          DISPLAY "VERBOSE: Processing command line..".
+009450  EX-LOGO.
+009460          EXIT.
+009470
+009480  INIZIALI.
+009490
+009500          INITIALIZE PARAMETRI.
+009510  
+009520
+009530          MOVE 7       TO REM-COLUMN.
+009540
+009550          ACCEPT TYPE-SYSTEM FROM ENVIRONMENT 'OS' END-ACCEPT.
+009560
+009570          IF TYPE-SYSTEM NOT > SPACES
+009580           ACCEPT TYPE-SYSTEM FROM ENVIRONMENT 'OSTYPE' END-ACCEPT
+009590           END-IF.
+009600
+009610* if true at end guicobol adds a default closed procedure
+009620
+009630          MOVE "Y"        TO DEFAULT-CLOSED.
+009640
+009650
+009660  EX-INIZIALI.
+009670          EXIT.
+009680
+009690  HELP.
+009700
+009710          DISPLAY "Usage: guicobol projectfile [options]".
+009720          DISPLAY "                              ".
+009730          DISPLAY "File: cobol source.cbl/cpy/src (if no suplied"
+009740                  '".cbl" is added by default....)'.
+009750          DISPLAY "                              ".
+009760          DISPLAY "Options:                      ".
+009770          DISPLAY "-? This support panel         "
+009780          DISPLAY "-F use free format            "
+009790          DISPLAY "-v Turn on verbose            ".
+009800
+009810  EX-HELP.
+009820          EXIT.
+009830
+009840  OPZIONI.
+009850
+009860         ACCEPT FILE-DO FROM ENVIRONMENT "guicobol_inf"
+009870          END-ACCEPT.
+009880
+009890          IF FILE-DO = SPACES
+009900          MOVE "guicobol.inf"    TO FILE-DO.
+009910
+009920
+009930****************** > here we are sure that the command have something
+009940
+009950          PERFORM VARYING IND FROM 1 BY 1 UNTIL IND > 100
+009960          OR FILE-IN(IND:1) NOT = SPACES
+009970           CONTINUE
+009980          END-PERFORM.
+009990
+010000*
+010010****************** > if first is "-" we could have -? or -m option..
+010020*
+010030
+010040          IF FILE-IN(IND:1) NOT = "-"
+010050
+010060****************** > from here we can check for the option
+010070
+010080           PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
+010090           OR FILE-IN(IND:1) = SPACES
+010100            CONTINUE
+010110           END-PERFORM
+010120
+010130          END-IF.
+010140
+010150          MOVE 1                 TO IND1.
+010160
+010170          PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
+010180          OR IND1 > MAXOPZ
+010190
+010200           IF FILE-IN(IND:1) = "-"
+010210           MOVE SPACES TO FILE-IN(IND:1)
+010220
+010230           ADD 1       TO IND
+010240           MOVE FILE-IN(IND:1)   TO SW-OPTION(IND1)
+010250           ADD 1       TO IND1
+010260
+010270            IF IND1 > MAXOPZ
+010280             DISPLAY "Too many command line options"
+010290             STOP RUN
+010300            END-IF
+010310
+010320           PERFORM VARYING IND FROM IND BY 1 UNTIL IND > 100
+010330           OR FILE-IN(IND:1) = SPACES
+010340            MOVE SPACES TO FILE-IN(IND:1)
+010350           END-PERFORM
+010360
+010370           END-IF
+010380
+010390          END-PERFORM.
+010400
+010410          IF TAB-OPTIONS > SPACES
+010420          DISPLAY "Invoked argument(S) for the builder:".
+010430
+010440*
+010450*  set the appropriate switch
+010460*
+010470          PERFORM VARYING IND FROM 1 BY 1 UNTIL IND = IND1
+010480
+010490           EVALUATE SW-OPTION(IND)
+010500            WHEN "?" MOVE "S"   TO SW-HELP
+010510            DISPLAY "show the help panel............."
+010520            WHEN "F" MOVE "S"   TO SW-FREE
+010530            DISPLAY "use the free format reading file"
+010540            WHEN "v" MOVE "S"   TO SW-VERBOSE
+010550            DISPLAY "show verbose process            "
+010560            WHEN OTHER
+010570            DISPLAY "Bad argument in the command line:"
+010580              SW-OPTION(IND)
+010590            STOP RUN
+010600           END-EVALUATE
+010610
+010620          END-PERFORM.
+010630
+010640
+010650
+010660          IF SW-HELP = "S"
+010670           PERFORM HELP THRU EX-HELP
+010680           STOP RUN.
+010690
+010700  EX-OPZIONI.
+010710          EXIT.
+010720
+010730  DO-INVOKE.
+010740
+010750          MOVE PARAMETRO(3) (2:) TO ISTRUZIONE.
+010760
+010770          PERFORM VARYING IND FROM 1 BY 1 UNTIL IND >
+010780           LENGTH OF ISTRUZIONE
+010790           OR ISTRUZIONE(IND:1) = '"'
+010800           CONTINUE
+010810          END-PERFORM.
+010820          IF IND NOT > 40
+010830           AND ISTRUZIONE(IND:1) = '"'
+010840            MOVE SPACES TO ISTRUZIONE(IND:)
+010850             PERFORM CERCA-DO    THRU EX-CERCA-DO.
+010860
+010870  EX-DO-INVOKE.
+010880          EXIT.
+010890
+010900  DO-IF.
+010910
+010920          MOVE PARAMETRO(2) (2:) TO ISTRUZIONE.
+010930
+010940          PERFORM VARYING IND FROM 1 BY 1 UNTIL IND >
+010950           LENGTH OF ISTRUZIONE
+010960           OR ISTRUZIONE(IND:1) = '"'
+010970           CONTINUE
+010980          END-PERFORM.
+010990
+011000          IF IND NOT > 40
+011010           AND ISTRUZIONE(IND:1) = '"'
+011020            MOVE SPACES TO ISTRUZIONE(IND:).
+011030
+011040          PERFORM IF-GET         THRU EX-IF-GET.
+011050
+011060          PERFORM VARYING IND FROM 5 BY 1 UNTIL IND > CONTA-PARAM
+011070          MOVE PARAMETRO(IND)    TO   REC-OUT(13:)
+011080          PERFORM SCRITTURA       THRU EX-SCRITTURA
+011090          END-PERFORM.
+011100
+011110  EX-DO-IF.
+011120          EXIT.
+011130
+011140  DO-GET.
+011150
+011160          MOVE SPACES            TO STRINGA
+011170          STRING "GET-" ISTRUZIONE DELIMITED BY SIZE INTO
+011180           STRINGA
+011190           MOVE STRINGA          TO ISTRUZIONE.
+011200
+011210          PERFORM CERCA-DO       THRU EX-CERCA-DO.
+011220
+011230  EX-DO-GET.
+011240          EXIT.
+011250
+011260  IF-GET.
+011270
+011280          MOVE SPACES            TO STRINGA
+011290          STRING "IF-GET-" ISTRUZIONE DELIMITED BY SIZE INTO
+011300           STRINGA
+011310           MOVE STRINGA          TO ISTRUZIONE.
+011320
+011330          PERFORM CERCA-DO       THRU EX-CERCA-DO.
+011340
+011350  EX-IF-GET.
+011360          EXIT.
+011370
+011380  DO-SET.
+011390
+011400          MOVE SPACES            TO STRINGA
+011410          STRING "SET-" ISTRUZIONE DELIMITED BY SIZE INTO
+011420           STRINGA
+011430           MOVE STRINGA          TO ISTRUZIONE.
+011440
+011450          PERFORM CERCA-DO       THRU EX-CERCA-DO.
+011460
+011470  EX-DO-SET.
+011480          EXIT.
+011490
+011500  CERCA-DO.
+011510
+011520
+011530          MOVE SPACES TO EOF-DO DATI-DO.
+011540
+011550          INITIALIZE TAB-FUNZIONE.
+011560*
+011570* get size of the INSTRUCTION...
+011580*
+011590
+011600          PERFORM VARYING IND FROM LENGTH OF ISTRUZIONE
+011610           BY -1 UNTIL IND = ZERO
+011620             OR ISTRUZIONE(IND:1) > SPACES
+011630             CONTINUE
+011640          END-PERFORM.
+011650* look for the single scecific token... hide" ---> hideform   take this for a mistake!
+011660*                                        hide "     hideform   skip since not match 
+011670          
+011680          ADD  1 to IND.
+011690          
+011700*
+011710* istruzione is always checkd into upper-case
+011720*
+011730
+011740          MOVE FUNCTION UPPER-CASE(ISTRUZIONE) TO ISTRUZIONE.
+011750
+011760           IF SW-VERBOSE = "S"
+011770            Display "VERBOSE: Build "
+011780              FUNCTION TRIM(ISTRUZIONE) " " stringa(1:60).
+011790
+011800
+011810          OPEN INPUT ARK-DO.
+011820*
+011830* arrive to the #property/method declare section
+011840*
+011850
+011860          PERFORM UNTIL EOF-DO = "S"
+011870           OR FUNCTION UPPER-CASE(DATI-DO(2:IND))
+011880                                = ISTRUZIONE(1:IND)
+011890      
+011900           IF EOF-DO NOT = "S"
+011910           PERFORM READ-NEXT-DO THRU EX-READ-NEXT-DO
+011920           END-IF
+011930
+011940          END-PERFORM.
+011950
+011960
+011970          IF EOF-DO = "S"
+011980            PERFORM TOKEN-ERROR    THRU EX-TOKEN-ERROR.
+011990*
+012000*  here is located at #token line.. go ahead at the next valid...
+012010*
+012020           IF SW-VERBOSE = "S"
+012030            Display "VERBOSE: found " DATI-DO(2:78).
+012040
+012050          IF EOF-DO NOT = "S"
+012060            AND FUNCTION UPPER-CASE(DATI-DO(2:IND))
+012070             = ISTRUZIONE(1:IND)
+012080             UNSTRING DATI-DO(2:)
+012090              DELIMITED BY ALL SPACES  INTO
+012100               USAGE-PARAM(1)
+012110               USAGE-PARAM(2)
+012120               USAGE-PARAM(3)
+012130               USAGE-PARAM(4)
+012140               USAGE-PARAM(5)
+012150               PERFORM VARYING IND FROM 1 BY 1 UNTIL IND > 5
+012160
+012170               MOVE FUNCTION UPPER-CASE(USAGE-PARAM(IND))
+012180                                     TO USAGE-PARAM(IND)
+012190
+012200                MOVE ZERO TO IND1
+012210                INSPECT USAGE-PARAM(IND) TALLYING IND1
+012220                 FOR ALL "MIN="
+012230                 IF IND1 = 1
+012240                  UNSTRING USAGE-PARAM(IND)
+012250                  DELIMITED BY "MIN=" INTO DUMMY MIN-FUNZIONE
+012260                 END-IF
+012270
+012280                MOVE ZERO TO IND1
+012290                INSPECT USAGE-PARAM(IND) TALLYING IND1
+012300                 FOR ALL "MAX="
+012310                 IF IND1 = 1
+012320                  UNSTRING USAGE-PARAM(IND)
+012330                  DELIMITED BY "MAX=" INTO DUMMY MAX-FUNZIONE
+012340                END-IF
+012350
+012360
+012370               END-PERFORM
+012380
+012390                IF MIN-FUNZIONE = ZEROS
+012400                 MOVE MAX-FUNZIONE TO MIN-FUNZIONE
+012410                END-IF
+012420
+012430                IF MAX-FUNZIONE = ZEROS
+012440                 MOVE MIN-FUNZIONE TO MAX-FUNZIONE
+012450                END-IF
+012460
+012470                IF MIN-FUNZIONE = ZERO
+012480                 AND MAX-FUNZIONE = ZERO
+012490                 MOVE 6          TO MIN-FUNZIONE MAX-FUNZIONE
+012500                END-IF
+012510
+012520                IF FUNCTION UPPER-CASE(PARAMETRO(1)) = "INVOKE"
+012530                 AND ( CONTA-PARAM  < MIN-FUNZIONE )
+012540                 AND MIN-FUNZIONE NOT = ZEROS
+012550
+012560***** WARNING STEP..  it could become an infinite loop
+012570
+012580                 PERFORM UNTIL CONTA-PARAM NOT < MIN-FUNZIONE
+012590
+012600                 PERFORM UNSTRINGA-AGAIN THRU EX-UNSTRINGA-AGAIN
+012610
+012620                 END-PERFORM
+012630
+012640                END-IF
+012650
+012660
+012670                IF FUNCTION UPPER-CASE(PARAMETRO(1)) = "INVOKE"
+012680                 AND ( CONTA-PARAM  < MIN-FUNZIONE
+012690                 OR CONTA-PARAM  > MAX-FUNZIONE )
+012700                  DISPLAY "numero errato di parametri "
+012710                   " per " USAGE-PARAM(1)
+012720                   " " CONTA-PARAM " invece di " MIN-FUNZIONE
+012730                                      " o " MAX-FUNZIONE
+012740                                      " at " COUNT-LINE " line "
+012750                 GO TO FINE-CERCA-DO
+012760                END-IF
+012770
+012780
+012790           PERFORM READ-NEXT-DO THRU EX-READ-NEXT-DO
+012800
+012810*
+012820*  and then manage the token by adding it inside the cobol source
+012830*  take care it runs processing something otherwise an error is
+012840*  occurred to we use the DONE-SOMETHING flag
+012850*
+012860
+012870           MOVE "N"    TO DONE-SOMETHING
+012880
+012890           PERFORM UNTIL EOF-DO = "S"
+012900
+012910           IF DATI-DO(1:1) = "#"
+012920            MOVE "S" TO EOF-DO
+012930            IF DONE-SOMETHING = "N"
+012940             PERFORM TOKEN-ERROR    THRU EX-TOKEN-ERROR
+012950            END-IF
+012960
+012970           END-IF
+012980
+012990           IF EOF-DO NOT = "S"
+013000            PERFORM MANAGE-TEMPLATE THRU EX-MANAGE-TEMPLATE
+013010           END-IF
+013020
+013030           IF EOF-DO NOT = "S"
+013040            PERFORM READ-NEXT-DO THRU EX-READ-NEXT-DO
+013050           END-IF
+013060
+013070          END-PERFORM.
+013080
+013090  FINE-CERCA-DO.
+013100
+013110          CLOSE ARK-DO.
+013120
+013130  EX-CERCA-DO.
+013140         EXIT.
+013150   
+013160  ADDED-LINES.
+013170  
+013180           move rec-in           to REC-OUT.
+013190           move "*"              to rec-out(7:1).
+013200           write rec-out.
+013210           move spaces           to REC-OUT.
+013220           
+013230  EX-ADDED-LINES.
+013240         EXIT.
+013250
+013260  TOKEN-ERROR.
+013270
+013280          MOVE "Y"               TO EXIT-WITH-ERRORS.
+013290
+013300          DISPLAY 
+013310          " Severe Error: Missing property/method into " &
+013320             "guicobol.inf:"
+013330           ISTRUZIONE(1:IND)
+013340            " at " COUNT-LINE " line ".
+013350
+013360
+013370  EX-TOKEN-ERROR.
+013380         EXIT.
+013390
+013400  MANAGE-TEMPLATE.
+013410
+013420
+013430         IF DATI-DO = SPACES GO TO EX-MANAGE-TEMPLATE.
+013440
+013450         MOVE "Y"   TO DONE-SOMETHING.
+013460
+013470         MOVE ZEROS TO IND1.
+013480
+013490         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(1)".
+013500
+013510         IF IND1 = 1
+013520          MOVE PARAMETRO(1)                TO REC-OUT(13:)
+013530         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+013540         GO TO EX-MANAGE-TEMPLATE.
+013550
+013560         MOVE ZEROS TO IND1.
+013570
+013580         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(2)".
+013590
+013600         IF IND1 = 1
+013610          MOVE PARAMETRO(2)                TO REC-OUT(13:)
+013620         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+013630         GO TO EX-MANAGE-TEMPLATE.
+013640
+013650         MOVE ZEROS TO IND1.
+013660
+013670         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(3)".
+013680
+013690         IF IND1 = 1
+013700          MOVE PARAMETRO(3)                TO REC-OUT(13:)
+013710         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+013720         GO TO EX-MANAGE-TEMPLATE.
+013730
+013740         MOVE ZEROS TO IND1.
+013750
+013760         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(4)".
+013770
+013780         IF IND1 = 1
+013790          MOVE PARAMETRO(4)                TO REC-OUT(13:)
+013800         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+013810         GO TO EX-MANAGE-TEMPLATE.
+013820
+013830         MOVE ZEROS TO IND1.
+013840
+013850         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(5)".
+013860
+013870         IF IND1 = 1
+013880          MOVE PARAMETRO(5)                TO REC-OUT(13:)
+013890         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+013900         GO TO EX-MANAGE-TEMPLATE.
+013910
+013920         MOVE ZEROS TO IND1.
+013930
+013940         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(6)".
+013950
+013960         IF IND1 = 1
+013970          MOVE PARAMETRO(6)                TO REC-OUT(13:)
+013980         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+013990         GO TO EX-MANAGE-TEMPLATE.
+014000
+014010         MOVE ZEROS TO IND1.
+014020
+014030
+014040         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(7)".
+014050
+014060         IF IND1 = 1
+014070          MOVE PARAMETRO(7)                TO REC-OUT(13:)
+014080         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014090         GO TO EX-MANAGE-TEMPLATE.
+014100
+014110         MOVE ZEROS TO IND1.
+014120
+014130         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(8)".
+014140
+014150         IF IND1 = 1
+014160          MOVE PARAMETRO(8)                TO REC-OUT(13:)
+014170         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014180         GO TO EX-MANAGE-TEMPLATE.
+014190
+014200         MOVE ZEROS TO IND1.
+014210
+014220         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(9)".
+014230
+014240         IF IND1 = 1
+014250          MOVE PARAMETRO(9)                TO REC-OUT(13:)
+014260         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014270         GO TO EX-MANAGE-TEMPLATE.
+014280
+014290         MOVE ZEROS TO IND1.
+014300
+014310         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(10)".
+014320
+014330         IF IND1 = 1
+014340          MOVE PARAMETRO(10)               TO REC-OUT(13:)
+014350         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014360         GO TO EX-MANAGE-TEMPLATE.
+014370
+014380         MOVE ZEROS TO IND1.
+014390
+014400         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(11)".
+014410
+014420         IF IND1 = 1
+014430          MOVE PARAMETRO(11)               TO REC-OUT(13:)
+014440         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014450         GO TO EX-MANAGE-TEMPLATE.
+014460
+014470         MOVE ZEROS TO IND1.
+014480
+014490         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(12)".
+014500
+014510         IF IND1 = 1
+014520          MOVE PARAMETRO(12)               TO REC-OUT(13:)
+014530         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014540         GO TO EX-MANAGE-TEMPLATE.
+014550
+014560         MOVE ZEROS TO IND1.
+014570
+014580         INSPECT DATI-DO TALLYING IND1 FOR ALL "$PARAM(13)".
+014590
+014600         IF IND1 = 1
+014610          MOVE PARAMETRO(13)               TO REC-OUT(13:)
+014620         PERFORM SCRITTURA                 THRU EX-SCRITTURA
+014630         GO TO EX-MANAGE-TEMPLATE.
+014640
+014650
+014660         MOVE ZEROS TO IND1.
+014670
+014680         INSPECT DATI-DO TALLYING IND1 FOR ALL "$COLOR(2)".
+014690
+014700         IF IND1 = 1
+014710          MOVE PARAMETRO(2)                TO REC-OUT(20:)
+014720          PERFORM SCRITTURA                THRU EX-SCRITTURA
+014730          GO TO EX-MANAGE-TEMPLATE.
+014740
+014750
+014760*
+014770*  replace instruction (put a dot yes or no (METTI-DOT=S for yes)
+014780*
+014790
+014800         MOVE ZEROS TO IND1.
+014810
+014820         INSPECT DATI-DO TALLYING IND1 FOR ALL "$DOT".
+014830
+014840         IF IND1 = 1
+014850
+014860          IF  METTI-DOT = "S"
+014870            MOVE "."             TO REC-OUT(20:1)
+014880          ELSE
+014890            MOVE SPACES          TO REC-OUT
+014900          END-IF
+014910
+014920         PERFORM SCRITTURA       THRU EX-SCRITTURA
+014930         GO TO EX-MANAGE-TEMPLATE.
+014940
+014950
+014960*
+014970* LAST replace instruction
+014980*
+014990
+015000         MOVE ZEROS TO IND1.
+015010
+015020         INSPECT DATI-DO TALLYING IND1 FOR ALL "$STATEMENT".
+015030
+015040         IF IND1 = 1
+015050          MOVE STRINGA2                    TO REC-OUT(13:)
+015060         ELSE
+015070
+015080*
+015090* default move instruction
+015100*
+015110
+015120         MOVE DATI-DO                      TO REC-OUT.
+015130
+015140         PERFORM SCRITTURA                 THRU EX-SCRITTURA.
+015150  EX-MANAGE-TEMPLATE.
+015160         EXIT.
+015170
+015180  end program guicobol.
+015190
+015200
